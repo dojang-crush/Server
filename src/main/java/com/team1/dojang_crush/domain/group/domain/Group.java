@@ -1,5 +1,6 @@
 package com.team1.dojang_crush.domain.group.domain;
 
+import com.team1.dojang_crush.domain.BaseEntity;
 import com.team1.dojang_crush.domain.member.domain.Member;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.FetchType;
@@ -26,7 +27,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "`group`") // 테이블 이름을 이스케이프
-public class Group {
+public class Group extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,14 +45,6 @@ public class Group {
     @Column(name = "group_image_url")
     @NotBlank
     private String groupImageUrl;
-
-    @Column(name = "created_at")
-    @NotNull
-    private LocalDateTime createdAt;
-
-    @Column(name = "modified_at")
-    @NotNull
-    private LocalDateTime modifiedAt;
 
     @OneToMany(mappedBy = "group", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Member> members;

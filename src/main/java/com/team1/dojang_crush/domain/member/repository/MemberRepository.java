@@ -1,8 +1,7 @@
 package com.team1.dojang_crush.domain.member.repository;
 
 import com.team1.dojang_crush.domain.member.domain.Member;
-import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public class MemberRepository {
-
+public interface MemberRepository extends JpaRepository<Member, Long> {
 }

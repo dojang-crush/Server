@@ -1,5 +1,6 @@
 package com.team1.dojang_crush.domain.post.domain;
 
+import com.team1.dojang_crush.domain.BaseEntity;
 import com.team1.dojang_crush.domain.comment.domain.Comment;
 import com.team1.dojang_crush.domain.likePost.domain.LikePost;
 import com.team1.dojang_crush.domain.member.domain.Member;
@@ -32,27 +33,19 @@ import java.util.Date;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
-public class Post {
+public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id", updatable = false)
     private Long postId;
 
-    @Column(name = "post_content")
+    @Column(name = "post_content", columnDefinition = "TEXT")
     @NotEmpty
     private String postContent;
 
     @Column(name = "visited_date")
     @NotEmpty
     private Date visitedDate;
-
-    @Column(name = "created_at", updatable = false)
-    @NotEmpty
-    private LocalDateTime createdAt;
-
-    @Column(name = "modified_at")
-    @NotEmpty
-    private LocalDateTime modifiedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", referencedColumnName = "member_id", nullable = false)

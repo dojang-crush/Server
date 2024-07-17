@@ -1,4 +1,7 @@
 package com.team1.dojang_crush.domain.postImgUrl.repository;
 
-public class PostImgUrlRepository {
+import com.team1.dojang_crush.domain.postImgUrl.domain.PostImgUrl;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface PostImgUrlRepository extends JpaRepository<PostImgUrl, Long> {
 }

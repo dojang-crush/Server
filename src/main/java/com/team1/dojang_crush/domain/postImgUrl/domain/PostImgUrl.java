@@ -1,13 +1,7 @@
 package com.team1.dojang_crush.domain.postImgUrl.domain;
+import com.team1.dojang_crush.domain.BaseEntity;
 import com.team1.dojang_crush.domain.post.domain.Post;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -22,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
-public class PostImgUrl {
+public class PostImgUrl extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,14 +26,6 @@ public class PostImgUrl {
     @Column(name = "post_img_url")
     @NotBlank
     private String postImgUrl;
-
-    @Column(name = "created_at")
-    @NotNull
-    private LocalDateTime createdAt;
-
-    @Column(name = "modified_at")
-    @NotNull
-    private LocalDateTime modifiedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", referencedColumnName = "post_id")

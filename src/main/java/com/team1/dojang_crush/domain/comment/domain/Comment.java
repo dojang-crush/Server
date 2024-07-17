@@ -1,4 +1,5 @@
 package com.team1.dojang_crush.domain.comment.domain;
+import com.team1.dojang_crush.domain.BaseEntity;
 import com.team1.dojang_crush.domain.member.domain.Member;
 import com.team1.dojang_crush.domain.post.domain.Post;
 import jakarta.persistence.CascadeType;
@@ -25,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
-public class Comment {
+public class Comment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,14 +40,6 @@ public class Comment {
     @Column(name = "comment_depth")
     @NotNull
     private Integer commentDepth;
-
-    @Column(name = "created_at")
-    @NotNull
-    private LocalDateTime createdAt;
-
-    @Column(name = "modified_at")
-    @NotNull
-    private LocalDateTime modifiedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_comment_id")
