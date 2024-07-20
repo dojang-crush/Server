@@ -8,8 +8,8 @@
 name: Java CI with Gradle
 
 on:
-  push:
-    branches: [ "deploy" ]
+  # push:
+  #   branches: [ "deploy" ]
   pull_request:
     branches: [ "deploy" ]
 
@@ -47,7 +47,7 @@ jobs:
       run: ./gradlew build -x test
 
     - name: Docker Build
-      run: 
+      run: |
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
         docker build -f Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/dojang_crush:latest .
         docker push ${{ secrets.DOCKER_USERNAME }}/dojang_crush:latest
