@@ -58,9 +58,9 @@ jobs:
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_SSH_KEY }}
         script:
-          docker stop backend-container
-          docker rm $(docker ps -a --filter "status=exited" -q)
-          docker rmi ${{ secrets.DOCKER_USERNAME }}/dojang_crush
+          # docker stop backend-container
+          # docker rm $(docker ps -a --filter "status=exited" -q)
+          # docker rmi ${{ secrets.DOCKER_USERNAME }}/dojang_crush
 
           docker run -d --name backend-container -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/dojang_crush:latest
                 
