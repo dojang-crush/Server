@@ -57,4 +57,9 @@ public class Comment extends BaseEntity {
 
     @OneToMany(mappedBy = "parentComment", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Comment> childComments;
+
+    public void changeContent(String content){
+        this.commentContent=content;
+    }
+
 }

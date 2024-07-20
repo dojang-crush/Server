@@ -52,15 +52,11 @@ public class Member extends BaseEntity {
     @NotBlank
     private String email;
 
-
-
     @Column(name = "access_token")
     private String accessToken;
 
     @Column(name = "refresh_token")
     private String refreshToken;
-
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", referencedColumnName = "group_id")
