@@ -5,6 +5,7 @@ import com.team1.dojang_crush.domain.comment.domain.Comment;
 import com.team1.dojang_crush.domain.likePost.domain.LikePost;
 import com.team1.dojang_crush.domain.member.domain.Member;
 import com.team1.dojang_crush.domain.place.domain.Place;
+import com.team1.dojang_crush.domain.post.dto.PostRequestDto;
 import com.team1.dojang_crush.domain.postImgUrl.domain.PostImgUrl;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -44,7 +45,7 @@ public class Post extends BaseEntity {
     private String postContent;
 
     @Column(name = "visited_date")
-    @NotEmpty
+    @NotNull
     private Date visitedDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -65,4 +66,18 @@ public class Post extends BaseEntity {
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Comment> comments;
+
+    @Builder
+    public Post(String postContent, Date visitedDate, Member member, Place place){
+        this.postContent = postContent;
+        this.visitedDate = visitedDate;
+        this.member = member;
+        this.place = place;
+    }
+
+    public void update(String content, Place place, Date visitedDate) {
+        this.postContent = content;
+        this.visitedDate = visitedDate;
+        this.place = place;
+    }
 }
