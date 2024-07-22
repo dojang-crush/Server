@@ -57,14 +57,12 @@ jobs:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_SSH_KEY }}
-        script:
-          # docker stop backend-container
-          # docker rm $(docker ps -a --filter "status=exited" -q)
-          # docker rmi ${{ secrets.DOCKER_USERNAME }}/dojang_crush
+        script: |
+          docker stop backend-container
+          docker rm $(docker ps -a --filter "status=exited" -q)
+          docker rmi ${{ secrets.DOCKER_USERNAME }}/dojang_crush
 
           docker run -d --name backend-container -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/dojang_crush:latest
-                
-      
 
     # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
     # If your project does not have the Gradle Wrapper configured, you can use the following configuration to run Gradle with a specified version.
