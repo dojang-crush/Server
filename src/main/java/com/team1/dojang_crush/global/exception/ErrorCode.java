@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     INVALID_REQUEST(HttpStatus.BAD_REQUEST),
     NOT_FOUNT_POST(HttpStatus.NOT_FOUND),
-    NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND);
+    NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND),
+    NOT_FOUNT_GROUP(HttpStatus.NOT_FOUND);
     private HttpStatus httpStatus;
 }
