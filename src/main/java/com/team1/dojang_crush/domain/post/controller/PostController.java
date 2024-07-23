@@ -16,6 +16,7 @@ import com.team1.dojang_crush.domain.postImgUrl.service.PostImgUrlService;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -48,7 +49,7 @@ public class PostController {
                                       @RequestParam("content") String content,
                                       @RequestParam("placeId") Long placeId,
                                       @RequestParam("groupId") Long groupId,
-                                      @RequestParam("visitedDate") @DateTimeFormat(pattern = "yyyy-MM-dd")Date visitedDate,
+                                      @RequestParam("visitedDate") @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate visitedDate,
                                       @RequestParam(value = "images", required = false) List<MultipartFile> images){
         Post savedPost = postService.createPost(memberId, content,placeId,groupId,visitedDate, images);
         Member member = savedPost.getMember();
@@ -106,7 +107,7 @@ public class PostController {
     @GetMapping("/date/{groupId}")
     @ResponseStatus(value = HttpStatus.OK)
     public AllPostResponseDto getDatePosts(@PathVariable(name = "groupId")Long groupId,
-                                           @RequestParam("visitedDate") @DateTimeFormat(pattern = "yyyy-MM-dd")Date visitedDate){
+                                           @RequestParam("visitedDate") @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate visitedDate){
 
 
         // 그룹과 날짜로 posts 찾기
@@ -154,7 +155,7 @@ public class PostController {
                                       @RequestParam("content") String content,
                                       @RequestParam("placeId") Long placeId,
                                       @RequestParam("groupId") Long groupId,
-                                      @RequestParam("visitedDate") @DateTimeFormat(pattern = "yyyy-MM-dd")Date visitedDate,
+                                      @RequestParam("visitedDate") @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate visitedDate,
                                       @RequestParam(value = "images", required = false) List<MultipartFile> images){
         Post post = postService.updatePost(postId, content, placeId, groupId, visitedDate, images);
         PostImgUrl postImgUrl = postImgUrlService.findImgUrlByPost(post);

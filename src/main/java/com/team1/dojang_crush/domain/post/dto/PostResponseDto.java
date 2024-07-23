@@ -6,6 +6,7 @@ import com.team1.dojang_crush.domain.postImgUrl.domain.PostImgUrl;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -24,7 +25,7 @@ public class PostResponseDto {
     private String placeTag;
     private LocalDateTime createdDate;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date visitedDate;
+    private LocalDate visitedDate;
     private WriterDto writerDto;
     private Long groupId;
     private boolean postLike;

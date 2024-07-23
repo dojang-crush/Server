@@ -6,6 +6,7 @@ import com.team1.dojang_crush.domain.post.domain.Post;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,7 +24,7 @@ public class PostRequestDto {
     private Long groupId;
 
     private String content;
-    private Date visitedDate;
+    private LocalDate visitedDate;
 
     @NotBlank(message = "장소 id는 필수입니다.")
     private Long placeId;

@@ -20,6 +20,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,7 +47,7 @@ public class Post extends BaseEntity {
 
     @Column(name = "visited_date")
     @NotNull
-    private Date visitedDate;
+    private LocalDate visitedDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", referencedColumnName = "member_id", nullable = false)
@@ -68,14 +69,14 @@ public class Post extends BaseEntity {
     private List<Comment> comments;
 
     @Builder
-    public Post(String postContent, Date visitedDate, Member member, Place place){
+    public Post(String postContent, LocalDate visitedDate, Member member, Place place){
         this.postContent = postContent;
         this.visitedDate = visitedDate;
         this.member = member;
         this.place = place;
     }
 
-    public void update(String content, Place place, Date visitedDate) {
+    public void update(String content, Place place, LocalDate visitedDate) {
         this.postContent = content;
         this.visitedDate = visitedDate;
         this.place = place;

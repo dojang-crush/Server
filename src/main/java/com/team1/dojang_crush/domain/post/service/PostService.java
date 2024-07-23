@@ -12,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class PostService {
 
 
     // 새로운 게시글 작성
-    public Post createPost(Long memberId, String content, Long placeId, Long groupId, Date visitedDate, List<MultipartFile> images) {
+    public Post createPost(Long memberId, String content, Long placeId, Long groupId, LocalDate visitedDate, List<MultipartFile> images) {
         Member member = memberService.findMemberById(memberId);
         Place place = placeService.findPlaceById(placeId);
 
@@ -77,7 +78,7 @@ public class PostService {
 
     // 그룹 날짜별 게시글 찾기
     @Transactional(readOnly = true)
-    public List<Post> findPostsByDate(Long groupId, Date visitedDate) {
+    public List<Post> findPostsByDate(Long groupId, LocalDate visitedDate) {
 
         List<Post> posts = findAllPosts(groupId);
 
@@ -94,7 +95,7 @@ public class PostService {
 
     // 그룹 날짜별 게시글 찾기
     @Transactional(readOnly = true)
-    public List<Post> findPostsByDate1(Long groupId, Date visitedDate) {
+    public List<Post> findPostsByDate1(Long groupId, LocalDate visitedDate) {
         return postRepository.findByGroupIdAndVisitedDate(groupId, visitedDate);
     }
 
@@ -108,7 +109,7 @@ public class PostService {
     }
 
     // 게시글 수정
-    public Post updatePost(Long postId, String content, Long placeId, Long groupId, Date visitedDate, List<MultipartFile> images) {
+    public Post updatePost(Long postId, String content, Long placeId, Long groupId, LocalDate visitedDate, List<MultipartFile> images) {
 
         Post post = findPostById(postId);
 
