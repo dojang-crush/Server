@@ -6,6 +6,7 @@ import com.team1.dojang_crush.domain.group.domain.Group;
 import com.team1.dojang_crush.domain.group.repository.GroupRepository;
 import com.team1.dojang_crush.domain.likePlace.domain.LikePlace;
 import com.team1.dojang_crush.domain.likePost.domain.LikePost;
+import com.team1.dojang_crush.domain.member.repository.MemberRepository;
 import com.team1.dojang_crush.domain.post.domain.Post;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -54,6 +55,10 @@ public class Member extends BaseEntity {
     @NotBlank
     private String email;
 
+    //임시
+    @Column(name = "role")
+    private String role;
+
     @Column(name = "access_token")
     private String accessToken;
 
@@ -78,10 +83,16 @@ public class Member extends BaseEntity {
         this.accessToken = accessToken;
     }
 
-    public Member(String name, String imgUrl, String email) {
+    public Member(String name, String imgUrl, String email, String role, Group defaultGroup) {
         this.name = name;
         this.imgUrl = imgUrl;
         this.email = email;
+        this.role = role;
         this.isLead = false; // 기본값 설정
+        this.group = defaultGroup; // 디폴트 그룹 설정
+    }
+
+    public static Member createWithDefaultGroup(String name, String imgUrl, String email, String role, Group defaultGroup) {
+        return new Member(name, imgUrl, email, role, defaultGroup);
     }
 }
