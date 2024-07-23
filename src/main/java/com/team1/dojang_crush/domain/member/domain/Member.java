@@ -3,6 +3,7 @@ package com.team1.dojang_crush.domain.member.domain;
 import com.team1.dojang_crush.domain.BaseEntity;
 import com.team1.dojang_crush.domain.comment.domain.Comment;
 import com.team1.dojang_crush.domain.group.domain.Group;
+import com.team1.dojang_crush.domain.group.repository.GroupRepository;
 import com.team1.dojang_crush.domain.likePlace.domain.LikePlace;
 import com.team1.dojang_crush.domain.likePost.domain.LikePost;
 import com.team1.dojang_crush.domain.post.domain.Post;
@@ -39,6 +40,7 @@ public class Member extends BaseEntity {
     private Long memberId;
 
     @Column(name = "member_name")
+    @NotNull
     private String name;
 
     @Column(name = "member_img_url")
@@ -54,9 +56,6 @@ public class Member extends BaseEntity {
 
     @Column(name = "access_token")
     private String accessToken;
-
-    @Column(name = "refresh_token")
-    private String refreshToken;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", referencedColumnName = "group_id")
@@ -74,4 +73,15 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Post> posts;
+
+    public void updateAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public Member(String name, String imgUrl, String email) {
+        this.name = name;
+        this.imgUrl = imgUrl;
+        this.email = email;
+        this.isLead = false; // 기본값 설정
+    }
 }

@@ -7,7 +7,6 @@ import com.team1.dojang_crush.domain.comment.domain.dto.PostCommentListResponseD
 import com.team1.dojang_crush.domain.comment.domain.dto.UpdateCommentContentDTO;
 import com.team1.dojang_crush.domain.comment.repository.CommentRepository;
 import com.team1.dojang_crush.domain.member.domain.Member;
-import com.team1.dojang_crush.domain.member.repository.MemberRepository;
 import com.team1.dojang_crush.domain.post.domain.Post;
 import com.team1.dojang_crush.domain.post.repository.PostRepository;
 import com.team1.dojang_crush.global.exception.AppException;
@@ -30,14 +29,14 @@ public class CommentService {
     @Transactional
     public CommentResponseDTO createNewComment(Long postId, CommentCreatedRequestDTO dto, Member member) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUNT_POST, "게시글을 찾을 수 없습니다"));
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND_POST));
         Comment newComment;
         if(dto.getParentId()==null){
             newComment = dto.from(post, member);
 
         }else {
             Comment parentComment = commentRepository.findById(dto.getParentId())
-                    .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND_COMMENT, "연결할 댓글을 찾을 수 없습니다"));
+                    .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND_COMMENT));
             newComment = dto.from(post, member, parentComment);
         }
         Comment savedComment = commentRepository.save(newComment);
@@ -48,7 +47,7 @@ public class CommentService {
     @Transactional
     public PostCommentListResponseDTO findPostCommentList(Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUNT_POST, "게시글을 찾을 수 없습니다"));
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND_POST));
         List<Comment> commentList = commentRepository.findAllByPost(post);
         return PostCommentListResponseDTO.from(commentList, post);
     }
@@ -56,7 +55,7 @@ public class CommentService {
     @Transactional
     public CommentResponseDTO changeCommentContent(Long commentId, UpdateCommentContentDTO dto) {
         Comment preComment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND_COMMENT, "변경할 댓글을 찾을 수 없습니다"));
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND_COMMENT));
 
         preComment.changeContent(dto.getContent());
         Comment postComment = commentRepository.save(preComment);

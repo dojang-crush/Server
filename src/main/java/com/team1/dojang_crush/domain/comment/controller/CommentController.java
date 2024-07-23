@@ -27,7 +27,7 @@ public class CommentController {
 
     private Member findMember(Long id){
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUNT_POST, ""));
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND_POST));
         return member;
     }
 
