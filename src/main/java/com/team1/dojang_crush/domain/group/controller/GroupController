@@ -1,0 +1,140 @@
+package com.team1.dojang_crush.domain.group.controller;
+
+import com.team1.dojang_crush.domain.group.domain.Group;
+import com.team1.dojang_crush.domain.group.dto.AddGroupMemberDto;
+import com.team1.dojang_crush.domain.group.dto.GroupCreateDto;
+import com.team1.dojang_crush.domain.group.dto.GroupMemberDto;
+import com.team1.dojang_crush.domain.group.dto.GroupResponseDto;
+import com.team1.dojang_crush.domain.group.dto.UpdateGroupNameDto;
+import com.team1.dojang_crush.domain.group.service.GroupService;
+import com.team1.dojang_crush.domain.member.domain.Member;
+import com.team1.dojang_crush.domain.member.repository.MemberRepository;
+import com.team1.dojang_crush.domain.member.service.MemberService;
+import com.team1.dojang_crush.domain.post.domain.Post;
+import com.team1.dojang_crush.domain.post.dto.PostResponseDto;
+import com.team1.dojang_crush.domain.post.dto.WriterDto;
+import com.team1.dojang_crush.domain.postImgUrl.domain.PostImgUrl;
+import jakarta.persistence.EntityNotFoundException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/group")
+public class GroupController {
+    private final GroupService groupService;
+    private final MemberService memberService;
+
+    //////////////////// 임시
+    private final MemberRepository memberRepository;
+    private Member findMember(Long id){
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("해당 id의 회원을 찾을 수 없습니다."));
+        return member;
+    }
+
+    //그룹 생성
+//    @PostMapping
+//    @ResponseStatus(value = HttpStatus.CREATED)
+//    public GroupResponseDto createGroup(@RequestPart (value = "images", required = false) MultipartFile image,
+//                                        @RequestBody GroupCreateDto dto){
+//
+//        Member member = findMember(1l);
+//        Group group = groupService.createGroup(dto.getGroupName(), image, member);
+//
+//        List<Member> members= new ArrayList<>();
+//
+//
+//        return GroupResponseDto.from(group, members, null);
+//    }
+
+    //그룹 생성
+    @PostMapping
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public GroupResponseDto createGroup(@RequestBody GroupCreateDto dto){
+
+        Member member = findMember(1l);
+        Group group = groupService.createGroup(dto.getGroupName(), member);
+
+        List<Member> members= new ArrayList<>();
+
+        return GroupResponseDto.from(group, members, null);
+    }
+
+    //그룹원 추가
+    @PatchMapping
+    @ResponseStatus(value = HttpStatus.OK)
+    public GroupResponseDto addGroupMember(@RequestBody AddGroupMemberDto dto){
+
+        Member member = findMember(1l);
+        String groupCode = dto.getGroupCode();
+
+        Group group = groupService.addMember(groupCode,member);
+        List<Member> members= memberService.findGroupMemberList(group.getGroupId());
+
+        return GroupResponseDto.from(group, members, null);
+    }
+
+    //그룹원조회
+    @GetMapping("/{groupId}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public GroupResponseDto getGroupMember(@PathVariable(name = "groupId")Long groupId){
+
+        Group group = groupService.findById(groupId);
+        List<GroupMemberDto> memberDto = groupService.getMembers(groupId);
+
+        return GroupResponseDto.from(group, null, memberDto);
+    }
+
+    //그룹 이미지 수정
+//    @PatchMapping("/{groupId}/image")
+//    @ResponseStatus(value = HttpStatus.OK)
+//    public GroupResponseDto UpdateGroupImage(@PathVariable(name = "groupId")Long groupId,
+//                                            @RequestParam(value = "image", required = false) MultipartFile image){
+//
+//        Group group = groupService.updateImage(groupId, image);
+//        List<Member> members= memberService.findGroupMemberList(group.getGroupId());
+//
+//        return GroupResponseDto.from(group, members, null);
+//    }
+
+    //그룹 이름 수정
+    @PatchMapping("/{groupId}/name")
+    @ResponseStatus(value = HttpStatus.OK)
+    public GroupResponseDto UpdateGroupName(@PathVariable(name = "groupId")Long groupId,
+                                           @RequestBody UpdateGroupNameDto dto){
+
+        Group group = groupService.updateName(groupId, dto.getGroupName());
+        List<Member> members= memberService.findGroupMemberList(group.getGroupId());
+
+        return GroupResponseDto.from(group, members, null);
+    }
+
+    //그룹 삭제
+    @DeleteMapping("/{groupId}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public String deleteGroup(@PathVariable(name = "groupId")Long groupId){
+
+        Member member = findMember(1l);
+
+        groupService.delete(groupId, member);
+        return "그룹을 삭제했습니다.";
+    }
+}
