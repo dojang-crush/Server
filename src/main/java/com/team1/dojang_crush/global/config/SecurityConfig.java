@@ -1,10 +1,5 @@
 package com.team1.dojang_crush.global.config;
 
-import com.team1.dojang_crush.global.jwt.JwtAuthenticationFilter;
-import com.team1.dojang_crush.global.jwt.JwtExceptionFilter;
-import com.team1.dojang_crush.global.oauth2.OAuth2FailureHandler;
-import com.team1.dojang_crush.global.oauth2.OAuth2SuccessHandler;
-import com.team1.dojang_crush.global.oauth2.OAuth2UserService;
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -14,11 +9,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -28,11 +20,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final OAuth2UserService oAuth2UserService;
-    private final OAuth2SuccessHandler oAuth2SuccessHandler;
-    private final OAuth2FailureHandler oAuth2FailureHandler;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() { // security를 적용하지 않을 리소스
         return web -> web.ignoring()
@@ -61,7 +48,6 @@ public class SecurityConfig {
         return source;
     }
 
-    /* 여러 개의 보안 필터를 조합하여 하나의 보안 체인을 생성 */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -71,21 +57,15 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/", "/oauth2/**", "/login/oauth2/**").permitAll() // oauth2 경로 허용
+                        .requestMatchers("/**").permitAll() // 모든 요청에 대해 인증 없이 허용
                         .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
-                        .anyRequest().authenticated() // 모든 요청에 대해 인증 필요
+                        .anyRequest().permitAll() // 모든 요청에 대해 인증 필요 없음
                 )
-                .oauth2Login(oauth ->
-                        oauth.userInfoEndpoint(c -> c.userService(oAuth2UserService))
-                                .successHandler(oAuth2SuccessHandler)
-                                .failureHandler(oAuth2FailureHandler)
-                )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtExceptionFilter(), jwtAuthenticationFilter.getClass())
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/")
                 );
         return http.build();
     }
+
 }
