@@ -29,12 +29,13 @@ public class PostResponseDto {
     private WriterDto writerDto;
     private Long groupId;
     private boolean postLike;
+    private Integer countLike;
     private List<String> imageUrl;
     private RecentCommentDto recentCommentDto;
 
 
 
-    public static PostResponseDto from(Post savedPost, Place place, WriterDto writerDto, boolean postLike, PostImgUrl postImgUrl) {
+    public static PostResponseDto from(Post savedPost, Place place, WriterDto writerDto, boolean postLike, PostImgUrl postImgUrl, Integer countlIke) {
 
         // null 처리
         String content = savedPost.getPostContent() != null ? savedPost.getPostContent() : "";
@@ -52,12 +53,13 @@ public class PostResponseDto {
                 writerDto,
                 savedPost.getMember().getGroup().getGroupId(),
                 postLike,
+                countlIke,
                 imgUrl,
                 null
         );
     }
 
-    public static PostResponseDto from(Post savedPost, Place place, WriterDto writerDto, boolean postLike, RecentCommentDto recentCommentDto, PostImgUrl postImgUrl) {
+    public static PostResponseDto from(Post savedPost, Place place, WriterDto writerDto, boolean postLike, RecentCommentDto recentCommentDto, PostImgUrl postImgUrl, Integer countLike) {
 
         // null 처리
         String content = savedPost.getPostContent() != null ? savedPost.getPostContent() : "";
@@ -76,6 +78,7 @@ public class PostResponseDto {
                 writerDto,
                 savedPost.getMember().getGroup().getGroupId(),
                 postLike,
+                countLike,
                 imgUrl,
                 recentCommentDto
         );

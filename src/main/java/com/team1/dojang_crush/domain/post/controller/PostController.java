@@ -14,6 +14,7 @@ import com.team1.dojang_crush.domain.post.service.PostService;
 import com.team1.dojang_crush.domain.postImgUrl.domain.PostImgUrl;
 import com.team1.dojang_crush.domain.postImgUrl.service.PostImgUrlService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.CriteriaBuilder.In;
 import java.util.ArrayList;
 import java.util.Date;
 import java.time.LocalDate;
@@ -54,9 +55,10 @@ public class PostController {
         Post savedPost = postService.createPost(memberId, content,placeId,groupId,visitedDate, images);
         Member member = savedPost.getMember();
         PostImgUrl postImgUrl = postImgUrlService.findImgUrlByPost(savedPost);
+        Integer countLike = likePostService.countLikePost(savedPost);
         return PostResponseDto.from(savedPost, savedPost.getPlace(),
                 new WriterDto(member.getMemberId(), member.getName(), member.getImgUrl()),
-                likePostService.isExistsByMemberAndPost(member,savedPost),postImgUrl);
+                likePostService.isExistsByMemberAndPost(member,savedPost),postImgUrl, countLike);
     }
 
     // 그룹 전체 게시글 조회
@@ -93,10 +95,11 @@ public class PostController {
 
             // 임시
             Member member = findMember(1l);
+            Integer countLike = likePostService.countLikePost(post);
 
             PostResponseDto dto = PostResponseDto.from(post, post.getPlace(), postWriter,
                     likePostService.isExistsByMemberAndPost(member,post),
-                    recentCommentDto, postImgUrl);
+                    recentCommentDto, postImgUrl, countLike);
             list.add(dto);
         }
 
@@ -124,9 +127,10 @@ public class PostController {
             WriterDto postWriter = new WriterDto(post.getMember().getMemberId(), post.getMember().getName(), post.getMember().getImgUrl());
 
             PostImgUrl postImgUrl = postImgUrlService.findImgUrlByPost(post);
+            Integer countLike = likePostService.countLikePost(post);
 
             PostResponseDto dto = PostResponseDto.from(post, post.getPlace(), postWriter,
-                    likePostService.isExistsByMemberAndPost(member,post), postImgUrl);
+                    likePostService.isExistsByMemberAndPost(member,post), postImgUrl, countLike);
             list.add(dto);
         }
 
@@ -142,10 +146,11 @@ public class PostController {
 
         // 임시
         Member member = findMember(1l);
+        Integer countLike = likePostService.countLikePost(post);
 
         return PostResponseDto.from(post, post.getPlace(),
                 new WriterDto(post.getMember().getMemberId(), post.getMember().getName(), post.getMember().getImgUrl()),
-                likePostService.isExistsByMemberAndPost(member,post), postImgUrl);
+                likePostService.isExistsByMemberAndPost(member,post), postImgUrl, countLike);
     }
 
     // 게시글 수정
@@ -159,9 +164,11 @@ public class PostController {
                                       @RequestParam(value = "images", required = false) List<MultipartFile> images){
         Post post = postService.updatePost(postId, content, placeId, groupId, visitedDate, images);
         PostImgUrl postImgUrl = postImgUrlService.findImgUrlByPost(post);
+        Integer countLike = likePostService.countLikePost(post);
+
         return PostResponseDto.from(post, post.getPlace(),
                 new WriterDto(post.getMember().getMemberId(), post.getMember().getName(), post.getMember().getImgUrl()),
-                likePostService.isExistsByMemberAndPost(post.getMember(),post), postImgUrl);
+                likePostService.isExistsByMemberAndPost(post.getMember(),post), postImgUrl, countLike);
     }
 
     // 게시글 삭제
@@ -181,30 +188,6 @@ public class PostController {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("해당 id의 회원을 찾을 수 없습니다."));
         return member;
-    }
-
-
-
-    //좋아요
-    @PostMapping("/{postId}/like")
-    @ResponseStatus(value = HttpStatus.CREATED)
-    public String createLikePost(@PathVariable(name = "postId")Long postId){
-
-        Member member = findMember(1l);
-
-        likePostService.create(postId, member.getMemberId());
-        return "좋아요를 눌렀습니다.";
-    }
-
-    //좋아요 취소
-    @DeleteMapping("/{postId}/like")
-    @ResponseStatus(value = HttpStatus.OK)
-    public String deleteLikePost(@PathVariable(name = "postId")Long postId){
-
-        Member member = findMember(1l);
-
-        likePostService.delete(postId, member.getMemberId());
-        return "좋아요를 취소했습니다.";
     }
 
 }

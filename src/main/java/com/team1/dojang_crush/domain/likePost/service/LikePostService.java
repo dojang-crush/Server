@@ -36,12 +36,7 @@ public class LikePostService {
 
         likePostRepository.save(likePost);
     }
-    
-    // memberId와 post로 좋아요를 누른 상태인지 확인
-    public boolean isLike(Long memberId, Post post){
-        Member member = memberService.findMemberById(memberId);
-        return isExistsByMemberAndPost(member, post);
-    }
+
 
     //member와 post로 좋아요를 누른 상태인지 확인
     public boolean isExistsByMemberAndPost(Member member, Post post) {
