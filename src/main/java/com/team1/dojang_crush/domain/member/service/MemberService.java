@@ -21,12 +21,23 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public Member createMember(String name, String imgUrl, String email, String role) {
+    public long findMemberIdByEmail(String email){
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("계정이 존재하지 않습니다."));
+        return member.getMemberId();
+    }
+
+    public Member findMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(()->new IllegalArgumentException("계정이 존재하지 않습니다."));
+    }
+
+    public Member createMember(String name, String imgUrl, String email) {
         Group defaultGroup = groupRepository.findByGroupCode("DEFAULT");
         if (defaultGroup == null) {
             throw new IllegalStateException("Default group not found");
         }
-        Member member = new Member(name, imgUrl, email, role, defaultGroup);
+        Member member = new Member(name, imgUrl, email, defaultGroup);
         return memberRepository.save(member);
     }
 
@@ -34,4 +45,6 @@ public class MemberService {
         return Optional.ofNullable(memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("Member not found with email: " + email)));
     };
+
+
 }

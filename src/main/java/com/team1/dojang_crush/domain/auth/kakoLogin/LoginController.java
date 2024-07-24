@@ -1,14 +1,11 @@
-package com.team1.dojang_crush.domain.auth.login;
+package com.team1.dojang_crush.domain.auth.kakoLogin;
 
-import com.efubtoy.team1.domain.account.dto.AccountRequestDTO;
-import com.efubtoy.team1.domain.account.service.AccountService;
-import com.efubtoy.team1.domain.auth.dto.LoginResponseDTO;
-import com.efubtoy.team1.global.exception.CustomException;
-import com.efubtoy.team1.global.exception.ErrorCode;
-import com.efubtoy.team1.global.utils.JWTUtils;
-import com.team1.dojang_crush.domain.jwt.JwtUtil;
-import com.team1.dojang_crush.domain.member.domain.dto.MemberRequestDTO;
+import com.team1.dojang_crush.domain.auth.dto.LoginResponseDTO;
+import com.team1.dojang_crush.domain.member.dto.MemberRequestDTO;
 import com.team1.dojang_crush.domain.member.service.MemberService;
+import com.team1.dojang_crush.global.exception.CustomException;
+import com.team1.dojang_crush.global.exception.ErrorCode;
+import com.team1.dojang_crush.global.utils.JWTUtils;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +25,7 @@ public class LoginController {
     private String redirectUri;
 
     private final KaKaoLoginService kaKaoLoginService;
-    private final JwtUtil jwtUtils;
+    private final JWTUtils jwtUtils;
     private final MemberService memberService;
 
     @GetMapping("/login")
@@ -46,17 +43,17 @@ public class LoginController {
             accessToken = kaKaoLoginService.getAccessTokenFromKakao(clientId, code);
             userInfo = kaKaoLoginService.getUserInfo(accessToken);
         }catch (IOException e){
-            throw new CustomException(ErrorCode.INVALID_ACCESS);
+            throw new CustomException(ErrorCode.INVALID_REQUEST);
         }
 
         //사용자 엑세스 토큰과 리프레시 토큰 생성
         String userAccessToken = "Bearer "+jwtUtils.createToken(userInfo);
         String userRefreshToken= jwtUtils.createRefreshToken(userInfo);
-        long accountId = MemberService.findAccountIdByEmail(userInfo.getEmail());
+        long memberId = memberService.findMemberIdByEmail(userInfo.getEmail());
 
         LoginResponseDTO responseDto = LoginResponseDTO.builder()
-                .userinfo(userInfo)
-                .accountId(accountId)
+                .memberInfo(userInfo)
+//                .memberId(memberId)
                 .accessToken(userAccessToken)
                 .refreshToken(userRefreshToken)
                 .build();

@@ -55,10 +55,6 @@ public class Member extends BaseEntity {
     @NotBlank
     private String email;
 
-    //임시
-    @Column(name = "role")
-    private String role;
-
     @Column(name = "access_token")
     private String accessToken;
 
@@ -79,24 +75,16 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Post> posts;
 
-    public void updateAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
 
-    public Member(String name, String imgUrl, String email, String role, Group defaultGroup) {
+    public Member(String name, String imgUrl, String email, Group defaultGroup) {
         this.name = name;
         this.imgUrl = imgUrl;
         this.email = email;
-        this.role = role;
         this.isLead = false; // 기본값 설정
         this.group = defaultGroup; // 디폴트 그룹 설정
     }
 
-    public static Member createWithDefaultGroup(String name, String imgUrl, String email, String role, Group defaultGroup) {
-        return new Member(name, imgUrl, email, role, defaultGroup);
-    }
-
-    public String getUserRole() {
-        return this.role;
+    public static Member createWithDefaultGroup(String name, String imgUrl, String email, Group defaultGroup) {
+        return new Member(name, imgUrl, email, defaultGroup);
     }
 }

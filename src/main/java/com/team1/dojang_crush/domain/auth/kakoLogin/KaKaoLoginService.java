@@ -1,10 +1,11 @@
-package com.team1.dojang_crush.domain.auth.login;
+package com.team1.dojang_crush.domain.auth.kakoLogin;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team1.dojang_crush.domain.member.domain.Member;
-import com.team1.dojang_crush.domain.member.domain.dto.MemberRequestDTO;
+import com.team1.dojang_crush.domain.member.dto.MemberRequestDTO;
 import com.team1.dojang_crush.domain.member.repository.MemberRepository;
+import com.team1.dojang_crush.domain.member.service.MemberService;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class KaKaoLoginService {
     private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
     private String clientSecret;
@@ -98,24 +100,21 @@ public class KaKaoLoginService {
 
         String nickname = properties.get("nickname").toString();
         String email = kakao_account.get("email").toString();
+        String imgUrl = kakao_account.get("picture").toString(); //TODO 도메인 이름 picture 맞는지 확인
 
 
-        Optional<Member> account=memberRepository.findByEmail(email);
-        if (account.isEmpty()){
-            //TODO 저장 형식 바꾸기
-            Member newAccount = Member.builder()
-                    .name(nickname)
-                    .email(email)
-                    .build();
-            memberRepository.save(newAccount);
+        Optional<Member> member=memberRepository.findByEmail(email);
+        if (member.isEmpty()){
+            Member newMember = memberService.createMember(nickname, imgUrl, email); // 멤버 생성할때 기본 그룹을 저장할 수 있도록 빌드
+            memberRepository.save(newMember);
         }
 
         MemberRequestDTO dto = MemberRequestDTO.builder()
                 .nickname(nickname)
                 .email(email)
+                .imgUrl(imgUrl)
                 .build();
 
         return dto;
-
     }
 }

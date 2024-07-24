@@ -1,4 +1,4 @@
-package com.team1.dojang_crush.domain.auth.login;
+package com.team1.dojang_crush.domain.auth.kakoLogin;
 
 import com.team1.dojang_crush.domain.member.domain.Member;
 import java.util.Collection;
