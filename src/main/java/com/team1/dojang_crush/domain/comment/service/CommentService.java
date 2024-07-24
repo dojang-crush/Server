@@ -1,6 +1,9 @@
 package com.team1.dojang_crush.domain.comment.service;
 
 import com.team1.dojang_crush.domain.comment.domain.Comment;
+import com.team1.dojang_crush.domain.comment.repository.CommentRepository;
+import com.team1.dojang_crush.domain.post.domain.Post;
+import java.util.Optional;
 import com.team1.dojang_crush.domain.comment.domain.dto.CommentCreatedRequestDTO;
 import com.team1.dojang_crush.domain.comment.domain.dto.CommentResponseDTO;
 import com.team1.dojang_crush.domain.comment.domain.dto.PostCommentListResponseDTO;
@@ -63,13 +66,23 @@ public class CommentService {
         return changeToDTO(postComment);
     }
 
+
     @Transactional
     public void deleteComment(Long commentId) {
         commentRepository.deleteById(commentId);
     }
 
+
+    // post의 제일 최근 댓글 찾기
+    @Transactional
+    public Comment findRecentComment(Post post) {
+        return commentRepository.findFirstByPostOrderByCreatedAtDesc(post)
+                .orElse(null);
+    }
+  
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public CommentResponseDTO changeToDTO(Comment comment){
         return CommentResponseDTO.from(comment);
     }
+  
 }
