@@ -37,6 +37,7 @@ public class CommentController {
         Member member = findMember(1l);
 
         CommentResponseDTO responseDTO = commentService.createNewComment(postId, dto, member);
+        System.out.println(responseDTO.getWriter().getName());
 
         return ResponseEntity.ok().body(responseDTO);
     }

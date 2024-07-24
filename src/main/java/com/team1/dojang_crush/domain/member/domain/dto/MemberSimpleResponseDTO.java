@@ -9,12 +9,14 @@ import lombok.Getter;
 @Builder
 public class MemberSimpleResponseDTO {
     Long memberId;
+    String name;
     Long groupId;
     String profileImageUrl;
 
     public static MemberSimpleResponseDTO from(Member e){
         return MemberSimpleResponseDTO.builder()
                 .memberId(e.getMemberId())
+                .name(e.getName())
                 .groupId(e.getGroup().getGroupId())
                 .profileImageUrl(e.getImgUrl())
                 .build();
