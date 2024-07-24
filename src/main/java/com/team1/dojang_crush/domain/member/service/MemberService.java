@@ -2,6 +2,7 @@ package com.team1.dojang_crush.domain.member.service;
 
 import com.team1.dojang_crush.domain.group.domain.Group;
 import com.team1.dojang_crush.domain.group.repository.GroupRepository;
+import com.team1.dojang_crush.domain.group.service.GroupService;
 import com.team1.dojang_crush.domain.member.domain.Member;
 import com.team1.dojang_crush.domain.member.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;

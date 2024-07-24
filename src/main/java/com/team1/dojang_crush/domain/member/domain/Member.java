@@ -25,8 +25,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -52,15 +55,11 @@ public class Member extends BaseEntity {
     @NotBlank
     private String email;
 
-
-
     @Column(name = "access_token")
     private String accessToken;
 
     @Column(name = "refresh_token")
     private String refreshToken;
-
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", referencedColumnName = "group_id")
