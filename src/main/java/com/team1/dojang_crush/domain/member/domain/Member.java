@@ -95,4 +95,8 @@ public class Member extends BaseEntity {
     public static Member createWithDefaultGroup(String name, String imgUrl, String email, String role, Group defaultGroup) {
         return new Member(name, imgUrl, email, role, defaultGroup);
     }
+
+    public String getUserRole() {
+        return this.role;
+    }
 }

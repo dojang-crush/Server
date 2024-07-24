@@ -4,6 +4,8 @@ import com.team1.dojang_crush.domain.group.domain.Group;
 import com.team1.dojang_crush.domain.group.repository.GroupRepository;
 import com.team1.dojang_crush.domain.member.domain.Member;
 import com.team1.dojang_crush.domain.member.repository.MemberRepository;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,4 +29,9 @@ public class MemberService {
         Member member = new Member(name, imgUrl, email, role, defaultGroup);
         return memberRepository.save(member);
     }
+
+    public Optional<Member> findByEmail(String email) {
+        return Optional.ofNullable(memberRepository.findByEmail(email)
+                .orElseThrow(() -> new NoSuchElementException("Member not found with email: " + email)));
+    };
 }
