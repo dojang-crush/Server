@@ -33,7 +33,7 @@ public class CommentService {
     @Transactional
     public CommentResponseDTO createNewComment(Long postId, CommentCreatedRequestDTO dto, Member member) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUNT_POST, "게시글을 찾을 수 없습니다"));
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND_POST, "게시글을 찾을 수 없습니다"));
         Comment newComment;
         if(dto.getParentId()==null){
             newComment = dto.from(post, member);
@@ -51,7 +51,7 @@ public class CommentService {
     @Transactional
     public PostCommentListResponseDTO findPostCommentList(Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUNT_POST, "게시글을 찾을 수 없습니다"));
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND_POST, "게시글을 찾을 수 없습니다"));
         List<Comment> commentList = commentRepository.findAllByPost(post);
         return PostCommentListResponseDTO.from(commentList, post);
     }
