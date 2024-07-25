@@ -1,5 +1,12 @@
 package com.team1.dojang_crush.global.config;
 
+import com.team1.dojang_crush.domain.member.repository.MemberRepository;
+import com.team1.dojang_crush.global.oauth.CustomOAuth2UserService;
+import com.team1.dojang_crush.global.oauth.OAuth2SuccessHandler;
+import com.team1.dojang_crush.global.oauth.jwt.JWTAuthenticationEntryPoint;
+import com.team1.dojang_crush.global.oauth.jwt.JWTExceptionFilter;
+import com.team1.dojang_crush.global.oauth.jwt.JWTFilter;
+import com.team1.dojang_crush.global.utils.JWTUtils;
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +18,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -20,6 +28,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final JWTUtils jwtUtils;
+    private final MemberRepository memberRepository;
+
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() { // security를 적용하지 않을 리소스
         return web -> web.ignoring()
@@ -29,6 +43,8 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.addAllowedOrigin("http://localhost:3000");
@@ -36,15 +52,17 @@ public class SecurityConfig {
         configuration.addAllowedOrigin("http://localhost:5174");
         configuration.addAllowedOrigin("http://localhost:8080");
 
-        configuration.addAllowedMethod("*"); //모든 Method 허용(POST, GET, ...)
-        configuration.addAllowedHeader("*"); //모든 Header 허용
-        configuration.setAllowCredentials(true); //CORS 요청에서 자격 증명(쿠키, HTTP 헤더) 허용
+        configuration.addAllowedMethod("GET");
+        configuration.addAllowedMethod("POST");
+        configuration.addAllowedMethod("PATCH");
+        configuration.addAllowedMethod("DELETE");
+        configuration.addAllowedMethod("OPTIONS");
+        configuration.addAllowedHeader("*");
+        // 헤더에 authorization항목이 있으므로 credential을 true로 설정합니다.
+        configuration.setAllowCredentials(true);
 
-        configuration.addExposedHeader("Authorization"); // 클라이언트가 특정 헤더값에 접근 가능하도록 하기
-        configuration.addExposedHeader("Authorization-Refresh");
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**",configuration);
 
-        source.registerCorsConfiguration("/**", configuration); //위에서 설정한 Configuration 적용
         return source;
     }
 
@@ -57,15 +75,29 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/**").permitAll() // 모든 요청에 대해 인증 없이 허용
-                        .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
+//                        .requestMatchers("/**").permitAll() // 모든 요청에 대해 인증 없이 허용
+//                        .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
                         .anyRequest().permitAll() // 모든 요청에 대해 인증 필요 없음
                 )
+                .oauth2Login(oauth2->
+                        oauth2.userInfoEndpoint(auth-> auth.userService(customOAuth2UserService))
+                                .successHandler(oAuth2SuccessHandler)
+                )
+                .exceptionHandling((ex)->ex
+                        .authenticationEntryPoint(jwtAuthenticationEntry()))
+                .addFilterBefore(new JWTFilter(jwtUtils,memberRepository), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JWTExceptionFilter(), JWTFilter.class)
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/")
                 );
         return http.build();
     }
+
+    @Bean
+    public JWTAuthenticationEntryPoint jwtAuthenticationEntry(){
+        return new JWTAuthenticationEntryPoint();
+    }
+
 
 }
