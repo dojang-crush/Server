@@ -22,6 +22,7 @@ public class CommentController {
 
     private final CommentService commentService;
 
+
     @PostMapping("/{postId}")
     public ResponseEntity<CommentResponseDTO> createNewComment(@AuthUser Member member, @PathVariable(name = "postId")Long postId,
                                                                @RequestBody @Valid final CommentCreatedRequestDTO dto){

@@ -6,12 +6,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import java.security.Key;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.security.Key;
-import java.util.Date;
 
 @Component
 public class JWTUtils {
@@ -27,6 +26,8 @@ public class JWTUtils {
     }
 
     public String createToken(MemberRequestDTO dto){
+
+
         Claims claims=Jwts.claims();
         claims.put("name",dto.getNickname());
         claims.put("email",dto.getEmail());
@@ -55,7 +56,6 @@ public class JWTUtils {
     }
 
     public boolean isExpired(String token){
-
         return Jwts.parserBuilder().setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)

@@ -3,7 +3,6 @@ package com.team1.dojang_crush.global.oauth;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team1.dojang_crush.domain.member.domain.dto.MemberRequestDTO;
 import com.team1.dojang_crush.global.utils.JWTUtils;
-import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,7 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 

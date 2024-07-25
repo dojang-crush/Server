@@ -15,5 +15,5 @@ public enum ErrorCode {
     NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND),
     NOT_FOUND_GROUP(HttpStatus.NOT_FOUND);
 
-    private HttpStatus httpStatus;
+    private final HttpStatus status;
 }

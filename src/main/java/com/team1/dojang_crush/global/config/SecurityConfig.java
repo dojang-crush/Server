@@ -1,6 +1,13 @@
 package com.team1.dojang_crush.global.config;
 
 import com.team1.dojang_crush.domain.member.repository.MemberRepository;
+import com.team1.dojang_crush.global.utils.JWTUtils;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import com.team1.dojang_crush.global.oauth.CustomOAuth2UserService;
 import com.team1.dojang_crush.global.oauth.OAuth2SuccessHandler;
 import com.team1.dojang_crush.global.oauth.jwt.JWTAuthenticationEntryPoint;
@@ -99,5 +106,5 @@ public class SecurityConfig {
         return new JWTAuthenticationEntryPoint();
     }
 
-
 }
+
