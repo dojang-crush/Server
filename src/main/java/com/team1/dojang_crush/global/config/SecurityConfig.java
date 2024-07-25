@@ -58,6 +58,7 @@ public class SecurityConfig {
         configuration.addAllowedOrigin("http://localhost:5173");
         configuration.addAllowedOrigin("http://localhost:5174");
         configuration.addAllowedOrigin("http://localhost:8080");
+        configuration.addAllowedHeader("https://api.dojang-crush.p-e.kr");
 
         configuration.addAllowedMethod("GET");
         configuration.addAllowedMethod("POST");
@@ -82,8 +83,8 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> request
-//                        .requestMatchers("/**").permitAll() // 모든 요청에 대해 인증 없이 허용
-//                        .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
+                        .requestMatchers("/login/oauth2/**","/oauth2/**").permitAll() // 모든 요청에 대해 인증 없이 허용
+                        .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
                         .anyRequest().permitAll() // 모든 요청에 대해 인증 필요 없음
                 )
                 .oauth2Login(oauth2->
