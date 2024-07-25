@@ -1,23 +1,30 @@
-package com.team1.dojang_crush.domain.auth.jwt;
+package com.team1.dojang_crush.global.oauth.jwt;
 
-import com.team1.dojang_crush.domain.auth.kakoLogin.CustomUserDetails;
 import com.team1.dojang_crush.domain.member.domain.Member;
 import com.team1.dojang_crush.domain.member.repository.MemberRepository;
-import com.team1.dojang_crush.global.exception.JWTAuthenticationException;
+import com.team1.dojang_crush.global.exception.AppException;
+import com.team1.dojang_crush.global.exception.ErrorCode;
+import com.team1.dojang_crush.global.oauth.PrincipalDetails;
 import com.team1.dojang_crush.global.utils.JWTUtils;
+import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import java.io.IOException;
+import java.util.HashMap;
+
 @Slf4j
 @AllArgsConstructor
+@RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
     private JWTUtils jwtUtils;
     private MemberRepository memberRepository;
@@ -44,10 +51,10 @@ public class JWTFilter extends OncePerRequestFilter {
             // 3. spring security context에 UserDetails 저장하기
             String email = jwtUtils.getEmail(token);
             Member member = memberRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("회원가입되어있지 않은 사용자입니다. 회원가입을 진행하십시오."));
-            CustomUserDetails userDetails = new CustomUserDetails(member);
+                    .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND_USER,"사용자를 찾지 못했습니다"));
+            PrincipalDetails principalDetails = new PrincipalDetails(member, new HashMap<String, Object>(), "kakao");
 
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(principalDetails, "", principalDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
         }catch (JWTAuthenticationException e){

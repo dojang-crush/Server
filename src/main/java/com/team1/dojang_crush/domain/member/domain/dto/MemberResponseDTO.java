@@ -1,4 +1,4 @@
-package com.team1.dojang_crush.domain.member.dto;
+package com.team1.dojang_crush.domain.member.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

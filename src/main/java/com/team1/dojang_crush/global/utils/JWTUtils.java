@@ -1,6 +1,6 @@
 package com.team1.dojang_crush.global.utils;
 
-import com.team1.dojang_crush.domain.member.dto.MemberRequestDTO;
+import com.team1.dojang_crush.domain.member.domain.dto.MemberRequestDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -26,7 +26,9 @@ public class JWTUtils {
     }
 
     public String createToken(MemberRequestDTO dto){
-        Claims claims= (Claims) Jwts.claims();
+
+
+        Claims claims=Jwts.claims();
         claims.put("name",dto.getNickname());
         claims.put("email",dto.getEmail());
         claims.put("imgUrl",dto.getImgUrl()); /** 이미지 url 추가*/
@@ -40,7 +42,7 @@ public class JWTUtils {
     }
 
     public String createRefreshToken(MemberRequestDTO dto){
-        Claims claims= (Claims) Jwts.claims();
+        Claims claims= Jwts.claims();
         claims.put("nickname",dto.getNickname());
         claims.put("email",dto.getEmail());
         claims.put("imgUrl",dto.getImgUrl()); /** 이미지 url 추가*/
@@ -54,7 +56,8 @@ public class JWTUtils {
     }
 
     public boolean isExpired(String token){
-        return Jwts.parserBuilder().setSigningKey(key).build()
+        return Jwts.parserBuilder().setSigningKey(key)
+                .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getExpiration()
@@ -62,9 +65,26 @@ public class JWTUtils {
     }
 
     public String getEmail(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build()
+        return Jwts.parserBuilder().setSigningKey(key)
+                .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .get("email", String.class);
+    }
+
+    public String getNickname(String token) {
+        return Jwts.parserBuilder().setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("nickname", String.class);
+    }
+
+    public String getImgUrl(String token) {
+        return Jwts.parserBuilder().setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("imgUrl", String.class);
     }
 }

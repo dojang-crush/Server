@@ -1,7 +1,7 @@
 package com.team1.dojang_crush.domain.comment.domain.dto;
 
 import com.team1.dojang_crush.domain.comment.domain.Comment;
-import com.team1.dojang_crush.domain.member.dto.MemberSimpleResponseDTO;
+import com.team1.dojang_crush.domain.member.domain.dto.MemberSimpleResponseDTO;
 import lombok.Builder;
 import lombok.Getter;
 

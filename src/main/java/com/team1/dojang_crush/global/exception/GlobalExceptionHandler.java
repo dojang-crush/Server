@@ -15,8 +15,8 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now().toString(),
                 e.getErrorCode().getStatus(),
                 e.getErrorCode().name(),
-                e.getErrorCode().getMessage()
+                e.getMessage()
         );
-        return new ResponseEntity(errorDto, HttpStatusCode.valueOf(e.getErrorCode().getStatus()));
+        return new ResponseEntity(errorDto, e.getErrorCode().getStatus());
     }
 }

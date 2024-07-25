@@ -1,8 +1,5 @@
 package com.team1.dojang_crush.global.config;
 
-import com.team1.dojang_crush.domain.auth.jwt.JWTExceptionFilter;
-import com.team1.dojang_crush.domain.auth.jwt.JWTFilter;
-import com.team1.dojang_crush.domain.auth.jwt.JWTAuthenticationEntryPoint;
 import com.team1.dojang_crush.domain.member.repository.MemberRepository;
 import com.team1.dojang_crush.global.utils.JWTUtils;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +8,21 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import com.team1.dojang_crush.global.oauth.CustomOAuth2UserService;
+import com.team1.dojang_crush.global.oauth.OAuth2SuccessHandler;
+import com.team1.dojang_crush.global.oauth.jwt.JWTAuthenticationEntryPoint;
+import com.team1.dojang_crush.global.oauth.jwt.JWTExceptionFilter;
+import com.team1.dojang_crush.global.oauth.jwt.JWTFilter;
+import com.team1.dojang_crush.global.utils.JWTUtils;
+import jakarta.servlet.DispatcherType;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -18,85 +30,81 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+@EnableWebSecurity
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final JWTUtils jwtUtils;
     private final MemberRepository memberRepository;
 
-    //swagger 필터 안타게
     @Bean
-    public WebSecurityCustomizer webSecurityCustomizer(){
-        return web -> {
-            web.ignoring()
-                    .requestMatchers("/swagger-ui/**S",
-                            //"/books/**", "/login", "/goods/**" , "/review/**","/records/**" , "/search**",
-                            "/swagger-resources/**",
-                            "/v3/api-docs/**"
-                    );
-        };
+    public WebSecurityCustomizer webSecurityCustomizer() { // security를 적용하지 않을 리소스
+        return web -> web.ignoring()
+                // error endpoint를 열어줘야 함, favicon.ico 추가
+                .requestMatchers("/error", "/favicon.ico");
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    public CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-        return http
-                .csrf((csrf)->csrf
-                        .disable())
-                .cors((auth)->auth.configurationSource(corsConfiguration()))
-                .httpBasic((basic)->basic.disable())
-                .authorizeHttpRequests( //TODO 권한 허용해야하는 주소 지정
-                        authorize -> authorize
-                                .requestMatchers("/login").permitAll()
-                                .requestMatchers("/oauth2/kakao").permitAll()
-//                                .requestMatchers("/accounts/join").permitAll()
-//                                .requestMatchers("/books/**").permitAll()
-//                                .requestMatchers("/goods/**").permitAll()
-//                                .requestMatchers("/records/**").permitAll()
-//                                .requestMatchers("/review/**").permitAll()
-//                                .requestMatchers("/search**").permitAll()
-                                .anyRequest().authenticated()
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin("http://localhost:5173");
+        configuration.addAllowedOrigin("http://localhost:5174");
+        configuration.addAllowedOrigin("http://localhost:8080");
+
+        configuration.addAllowedMethod("GET");
+        configuration.addAllowedMethod("POST");
+        configuration.addAllowedMethod("PATCH");
+        configuration.addAllowedMethod("DELETE");
+        configuration.addAllowedMethod("OPTIONS");
+        configuration.addAllowedHeader("*");
+        // 헤더에 authorization항목이 있으므로 credential을 true로 설정합니다.
+        configuration.setAllowCredentials(true);
+
+        source.registerCorsConfiguration("/**",configuration);
+
+        return source;
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(request -> request
+//                        .requestMatchers("/**").permitAll() // 모든 요청에 대해 인증 없이 허용
+//                        .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
+                        .anyRequest().permitAll() // 모든 요청에 대해 인증 필요 없음
                 )
-/*
-                .authorizeHttpRequests((request)->request.requestMatchers("/accounts/join","/login","/oauth2/kakao","/test",
-                                "/books/**","/goods/**" , "/records/**" , "/review/**","/records/**" , "/search**").permitAll()
-                        .anyRequest().permitAll())
- */
+                .oauth2Login(oauth2->
+                        oauth2.userInfoEndpoint(auth-> auth.userService(customOAuth2UserService))
+                                .successHandler(oAuth2SuccessHandler)
+                )
                 .exceptionHandling((ex)->ex
                         .authenticationEntryPoint(jwtAuthenticationEntry()))
-                .addFilterBefore(new JWTFilter(jwtUtils, memberRepository), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JWTFilter(jwtUtils,memberRepository), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JWTExceptionFilter(), JWTFilter.class)
-                .sessionManagement((session)->session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .build();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfiguration(){
-        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource=new UrlBasedCorsConfigurationSource();
-        CorsConfiguration corsConfiguration=new CorsConfiguration();
-
-        corsConfiguration.addAllowedOrigin("http://localhost:3000");
-        corsConfiguration.addAllowedOrigin("http://localhost:8080");
-        corsConfiguration.addAllowedOrigin("https://localhost:3000");
-        corsConfiguration.addAllowedMethod("GET");
-        corsConfiguration.addAllowedMethod("POST");
-        corsConfiguration.addAllowedMethod("PATCH");
-        corsConfiguration.addAllowedMethod("DELETE");
-        corsConfiguration.addAllowedMethod("OPTIONS");
-        corsConfiguration.addAllowedHeader("*");
-
-        // 헤더에 authorization항목이 있으므로 credential을 true로 설정합니다.
-        corsConfiguration.setAllowCredentials(true);
-
-        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**",corsConfiguration);
-
-        return urlBasedCorsConfigurationSource;
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/")
+                );
+        return http.build();
     }
 
     @Bean
     public JWTAuthenticationEntryPoint jwtAuthenticationEntry(){
         return new JWTAuthenticationEntryPoint();
     }
+
 }
+

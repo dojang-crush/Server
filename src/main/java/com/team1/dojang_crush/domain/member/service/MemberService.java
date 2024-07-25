@@ -4,12 +4,18 @@ import com.team1.dojang_crush.domain.group.domain.Group;
 import com.team1.dojang_crush.domain.group.repository.GroupRepository;
 import com.team1.dojang_crush.domain.member.domain.Member;
 import com.team1.dojang_crush.domain.member.repository.MemberRepository;
+
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class MemberService {
 
     private final GroupRepository groupRepository;
@@ -46,5 +52,13 @@ public class MemberService {
                 .orElseThrow(() -> new NoSuchElementException("Member not found with email: " + email)));
     };
 
+    // 그룹에 속하는 member들 찾기
+    public List<Member> findGroupMemberList(Long groupId) {
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new EntityNotFoundException("그룹을 찾을 수 없습니다"));
+        List<Member> memberList = memberRepository.findAllByGroup(group);
+        return memberList;
+    }
 
 }
+

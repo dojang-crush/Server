@@ -1,14 +1,15 @@
-package com.team1.dojang_crush.domain.auth.jwt;
+package com.team1.dojang_crush.global.oauth.jwt;
 
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Arrays;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.Arrays;
 
 @Component
 public class JWTExceptionFilter extends OncePerRequestFilter {
@@ -23,14 +24,4 @@ public class JWTExceptionFilter extends OncePerRequestFilter {
         }
     }
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        System.out.println("JWTExceptionFilter.shouldNotFilter");
-        String[] excludePath = {
-                "/swagger-ui/","/swagger-resources/", "/v3/api-docs/","/v3/api-docs"};
-        String path = request.getRequestURI();
-        System.out.println(path);
-        System.out.println(Arrays.stream(excludePath).anyMatch(path::startsWith));
-        return Arrays.stream(excludePath).anyMatch(path::startsWith);
-    }
 }
