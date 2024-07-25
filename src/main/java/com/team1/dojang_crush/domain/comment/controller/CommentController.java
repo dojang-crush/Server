@@ -52,6 +52,12 @@ public class CommentController {
         return ResponseEntity.ok().body("댓글이 삭제되었습니다.");
     }
 
+    @GetMapping("/test")
+    public ResponseEntity testController(@AuthUser Member member){
+
+        return ResponseEntity.ok().body("로그인에 성공했습니다");
+    }
+
 
 
 }
