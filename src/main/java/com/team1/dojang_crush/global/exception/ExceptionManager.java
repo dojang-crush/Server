@@ -9,7 +9,7 @@ public class ExceptionManager {
 
     @ExceptionHandler(AppException.class)
     public ResponseEntity<?> appExceptionHandler(AppException e){
-        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+        return ResponseEntity.status(e.getErrorCode().getStatus())
                 .body(e.getErrorCode().name()+"  "+e.getMessage());
     }
 }

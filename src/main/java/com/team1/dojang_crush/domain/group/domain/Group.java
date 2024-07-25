@@ -2,11 +2,13 @@ package com.team1.dojang_crush.domain.group.domain;
 
 import com.team1.dojang_crush.domain.BaseEntity;
 import com.team1.dojang_crush.domain.member.domain.Member;
+import com.team1.dojang_crush.domain.place.domain.Place;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Getter;
@@ -42,11 +44,35 @@ public class Group extends BaseEntity {
     @NotBlank
     private String groupCode;
 
-    @Column(name = "group_image_url")
-    @NotBlank
-    private String groupImageUrl;
+//    @Column(name = "group_image_url")
+//    @NotBlank
+//    private String groupImageUrl;
 
     @OneToMany(mappedBy = "group", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Member> members;
 
+
+
+//    @Builder
+//    public Group(String groupName, String groupCode, String groupImageUrl){
+//        this.groupName = groupName;
+//        this.groupCode = groupCode;
+//        this.groupImageUrl = groupImageUrl;
+//    }
+    
+    
+    @Builder
+    public Group(String groupName, String groupCode){
+        this.groupName = groupName;
+        this.groupCode = groupCode;
+    }
+
+//    public void updateImg(String url) {
+//        this.groupImageUrl = url;
+//    }
+
+
+    public void updateName(String name) {
+        this.groupName = name;
+    }
 }

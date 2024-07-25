@@ -3,8 +3,10 @@ package com.team1.dojang_crush.domain.member.domain;
 import com.team1.dojang_crush.domain.BaseEntity;
 import com.team1.dojang_crush.domain.comment.domain.Comment;
 import com.team1.dojang_crush.domain.group.domain.Group;
+import com.team1.dojang_crush.domain.group.repository.GroupRepository;
 import com.team1.dojang_crush.domain.likePlace.domain.LikePlace;
 import com.team1.dojang_crush.domain.likePost.domain.LikePost;
+import com.team1.dojang_crush.domain.member.repository.MemberRepository;
 import com.team1.dojang_crush.domain.post.domain.Post;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -25,8 +27,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -39,6 +44,7 @@ public class Member extends BaseEntity {
     private Long memberId;
 
     @Column(name = "member_name")
+    @NotNull
     private String name;
 
     @Column(name = "member_img_url")
@@ -54,9 +60,6 @@ public class Member extends BaseEntity {
 
     @Column(name = "access_token")
     private String accessToken;
-
-    @Column(name = "refresh_token")
-    private String refreshToken;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", referencedColumnName = "group_id")
@@ -74,4 +77,17 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Post> posts;
+
+
+    public Member(String name, String imgUrl, String email, Group defaultGroup) {
+        this.name = name;
+        this.imgUrl = imgUrl;
+        this.email = email;
+        this.isLead = false; // 기본값 설정
+        this.group = defaultGroup; // 디폴트 그룹 설정
+    }
+
+    public static Member createWithDefaultGroup(String name, String imgUrl, String email, Group defaultGroup) {
+        return new Member(name, imgUrl, email, defaultGroup);
+    }
 }
