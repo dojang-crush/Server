@@ -71,7 +71,7 @@ public class GroupService {
             return group;
         }
         else{
-            throw new AppException(ErrorCode.NOT_FOUNT_GROUP, "그룹코드를 가진 그룹이 존재하지 않습니다.");
+            throw new AppException(ErrorCode.NOT_FOUND_GROUP, "그룹코드를 가진 그룹이 존재하지 않습니다.");
         }
     }
 
