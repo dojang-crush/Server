@@ -9,8 +9,8 @@ import com.team1.dojang_crush.domain.member.domain.Member;
 import com.team1.dojang_crush.domain.member.repository.MemberRepository;
 import com.team1.dojang_crush.global.exception.AppException;
 import com.team1.dojang_crush.global.exception.ErrorCode;
+import com.team1.dojang_crush.global.oauth.AuthUser;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,37 +22,23 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    /* 임시 */
-    private final MemberRepository memberRepository;
-
-    private Member findMember(Long id){
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND_POST, ""));
-        return member;
-    }
-
     @PostMapping("/{postId}")
-    public ResponseEntity<CommentResponseDTO> createNewComment(@PathVariable(name = "postId")Long postId,
-        /*테스트용 임시*/                                        @RequestBody @Valid final CommentCreatedRequestDTO dto){
-        Member member = findMember(1l);
-
+    public ResponseEntity<CommentResponseDTO> createNewComment(@AuthUser Member member, @PathVariable(name = "postId")Long postId,
+                                                               @RequestBody @Valid final CommentCreatedRequestDTO dto){
         CommentResponseDTO responseDTO = commentService.createNewComment(postId, dto, member);
-        System.out.println(responseDTO.getWriter().getName());
 
         return ResponseEntity.ok().body(responseDTO);
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<PostCommentListResponseDTO> findPostCommentList(@PathVariable(name = "postId")Long postId){
-        Member member = findMember(1l);
-
+    public ResponseEntity<PostCommentListResponseDTO> findPostCommentList(@AuthUser Member member, @PathVariable(name = "postId")Long postId){
         PostCommentListResponseDTO responseDTO = commentService.findPostCommentList(postId);
 
         return ResponseEntity.ok().body(responseDTO);
     }
 
     @PatchMapping("/{commentId}")
-    public ResponseEntity<CommentResponseDTO> updateCommentContent(@PathVariable(name = "commentId")Long commentId,
+    public ResponseEntity<CommentResponseDTO> updateCommentContent(@AuthUser Member member, @PathVariable(name = "commentId")Long commentId,
                                                                    @RequestBody @Valid UpdateCommentContentDTO dto){
         CommentResponseDTO responseDTO = commentService.changeCommentContent(commentId, dto);
 
@@ -60,9 +46,11 @@ public class CommentController {
     }
 
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<String> deleteComment(@PathVariable(name = "commentId")Long commentId){
+    public ResponseEntity<String> deleteComment(@AuthUser Member member, @PathVariable(name = "commentId")Long commentId){
         commentService.deleteComment(commentId);
         return ResponseEntity.ok().body("댓글이 삭제되었습니다.");
     }
+
+
 
 }
