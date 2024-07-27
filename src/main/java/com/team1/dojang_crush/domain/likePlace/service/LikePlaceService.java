@@ -6,6 +6,7 @@ import com.team1.dojang_crush.domain.member.domain.Member;
 import com.team1.dojang_crush.domain.member.service.MemberService;
 import com.team1.dojang_crush.domain.place.domain.Place;
 import com.team1.dojang_crush.domain.place.service.PlaceService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,4 +54,10 @@ public class LikePlaceService {
     public boolean isExistsByMemberAndPlace(Member member, Place place) {
         return likePlaceRepository.existsByMemberAndPlace(member, place);
     }
+
+    public List<LikePlace> findLikePlaceByMember(Member member) {
+        return likePlaceRepository.findByMember(member);
+    }
+
+
 }

@@ -15,4 +15,5 @@ public interface LikePlaceRepository extends JpaRepository<LikePlace, Long> {
 
     Optional<LikePlace> findByMemberAndPlace(Member member, Place place);
 
+
 }
