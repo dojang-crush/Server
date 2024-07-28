@@ -10,6 +10,7 @@ import com.team1.dojang_crush.domain.member.domain.Member;
 import com.team1.dojang_crush.domain.member.repository.MemberRepository;
 import com.team1.dojang_crush.domain.member.service.MemberService;
 import jakarta.persistence.EntityNotFoundException;
+import com.team1.dojang_crush.global.oauth.AuthUser;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -31,13 +32,6 @@ public class GroupController {
     private final GroupService groupService;
     private final MemberService memberService;
 
-    //////////////////// 임시
-    private final MemberRepository memberRepository;
-    private Member findMember(Long id){
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("해당 id의 회원을 찾을 수 없습니다."));
-        return member;
-    }
 
     //그룹 생성
 //    @PostMapping
@@ -57,9 +51,9 @@ public class GroupController {
     //그룹 생성
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
-    public GroupResponseDto createGroup(@RequestBody GroupCreateDto dto){
+    public GroupResponseDto createGroup(@RequestBody GroupCreateDto dto,
+                                        @AuthUser Member member){
 
-        Member member = findMember(1l);
         Group group = groupService.createGroup(dto.getGroupName(), member);
 
         List<Member> members= new ArrayList<>();
@@ -71,9 +65,9 @@ public class GroupController {
     //그룹원 추가
     @PatchMapping
     @ResponseStatus(value = HttpStatus.OK)
-    public GroupResponseDto addGroupMember(@RequestBody AddGroupMemberDto dto){
+    public GroupResponseDto addGroupMember(@RequestBody AddGroupMemberDto dto,
+                                           @AuthUser Member member){
 
-        Member member = findMember(1l);
         String groupCode = dto.getGroupCode();
 
         Group group = groupService.addMember(groupCode,member);
@@ -120,9 +114,8 @@ public class GroupController {
     //그룹 삭제
     @DeleteMapping("/{groupId}")
     @ResponseStatus(value = HttpStatus.OK)
-    public String deleteGroup(@PathVariable(name = "groupId")Long groupId){
-
-        Member member = findMember(1l);
+    public String deleteGroup(@PathVariable(name = "groupId")Long groupId,
+                              @AuthUser Member member){
 
         groupService.delete(groupId, member);
         return "그룹을 삭제했습니다.";
