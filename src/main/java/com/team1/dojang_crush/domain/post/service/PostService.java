@@ -1,17 +1,22 @@
 package com.team1.dojang_crush.domain.post.service;
 
+import com.team1.dojang_crush.domain.comment.domain.Comment;
+import com.team1.dojang_crush.domain.comment.service.CommentService;
+import com.team1.dojang_crush.domain.likePost.service.LikePostService;
 import com.team1.dojang_crush.domain.member.domain.Member;
 import com.team1.dojang_crush.domain.member.service.MemberService;
 import com.team1.dojang_crush.domain.place.domain.Place;
 import com.team1.dojang_crush.domain.place.service.PlaceService;
 import com.team1.dojang_crush.domain.post.domain.Post;
-import com.team1.dojang_crush.domain.post.dto.PostRequestDto;
+import com.team1.dojang_crush.domain.post.dto.PostResponseDto;
+import com.team1.dojang_crush.domain.post.dto.RecentCommentDto;
+import com.team1.dojang_crush.domain.post.dto.WriterDto;
 import com.team1.dojang_crush.domain.post.repository.PostRepository;
+import com.team1.dojang_crush.domain.postImgUrl.domain.PostImgUrl;
 import com.team1.dojang_crush.domain.postImgUrl.service.PostImgUrlService;
 import jakarta.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +33,8 @@ public class PostService {
     private final MemberService memberService;
     private final PlaceService placeService;
     private final PostImgUrlService postImgUrlService;
+    private final LikePostService likePostService;
+    private final CommentService commentService;
 
 
     // 새로운 게시글 작성
@@ -35,7 +42,7 @@ public class PostService {
         
         Place place = placeService.findPlaceById(placeId);
 
-        Post post = new Post(content,visitedDate,member,place);
+        Post post = new Post(content,visitedDate, member, place);
         Post savedPost = postRepository.save(post);
 
         // 이미지가 있으면 생성
@@ -46,10 +53,62 @@ public class PostService {
                 e.printStackTrace();
                 throw new RuntimeException("이미지 업로드 중 오류가 발생했습니다.");
             }
-
         }
-
         return savedPost;
+    }
+
+
+
+    // post 리스트를 dto 리스트로 변환해서 반환
+    public List<PostResponseDto> postsToDtos(List<Post> posts, Member member, String type){
+
+        List<PostResponseDto> list = new ArrayList<>();
+
+        if(type.equals("date")){
+            for(Post post : posts){
+                //게시물 writer
+                WriterDto postWriter = new WriterDto(post.getMember().getMemberId(), post.getMember().getName(), post.getMember().getImgUrl());
+
+                PostImgUrl postImgUrl = postImgUrlService.findImgUrlByPost(post);
+                Integer countLike = likePostService.countLikePost(post);
+
+                PostResponseDto dto = PostResponseDto.from(post, post.getPlace(), postWriter,
+                        likePostService.isExistsByMemberAndPost(member,post), postImgUrl, countLike);
+                list.add(dto);
+            }
+            return list;
+        }
+        else{
+
+            RecentCommentDto recentCommentDto;
+            for(Post post : posts){
+                //post의 젤 최근 댓글 찾기
+                Comment recentComment = commentService.findRecentComment(post);
+                if(recentComment == null){ // 댓글이 없는 경우
+                    recentCommentDto = null;
+                }
+                else{
+                    Member recentCommentWriter = recentComment.getMember();
+                    //댓글 writer
+                    WriterDto commentWriter = new WriterDto(recentCommentWriter.getMemberId(),recentCommentWriter.getName(),recentCommentWriter.getImgUrl());
+                    //commentDto
+                    recentCommentDto = RecentCommentDto.from(recentComment,commentWriter);
+                }
+
+                //게시물 writer
+                WriterDto postWriter = new WriterDto(post.getMember().getMemberId(), post.getMember().getName(), post.getMember().getImgUrl());
+
+                PostImgUrl postImgUrl = postImgUrlService.findImgUrlByPost(post);
+
+                Integer countLike = likePostService.countLikePost(post);
+
+                PostResponseDto dto = PostResponseDto.from(post, post.getPlace(), postWriter,
+                        likePostService.isExistsByMemberAndPost(member,post),
+                        recentCommentDto, postImgUrl, countLike);
+                list.add(dto);
+            }
+            return list;
+        }
     }
 
 
@@ -69,7 +128,7 @@ public class PostService {
             }
         }
 
-        // 최신순으로 정렬해서 줘야함
+        // 최신순으로 정렬
         return posts.stream()
                 .sorted((post1, post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt())) // 내림차순 정렬
                 .collect(Collectors.toList());
@@ -92,6 +151,7 @@ public class PostService {
 
        return DatePosts;
     }
+
 
     // 그룹 날짜별 게시글 찾기
     @Transactional(readOnly = true)
@@ -140,6 +200,4 @@ public class PostService {
         Post post = findPostById(postId);
         postRepository.delete(post);
     }
-
-
 }
