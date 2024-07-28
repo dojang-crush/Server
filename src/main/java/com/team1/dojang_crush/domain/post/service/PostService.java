@@ -67,7 +67,7 @@ public class PostService {
         if(type.equals("date")){
             for(Post post : posts){
                 //게시물 writer
-                WriterDto postWriter = new WriterDto(post.getMember().getMemberId(), post.getMember().getName(), post.getMember().getImgUrl());
+                WriterDto postWriter = toWriterDto(post.getMember());
 
                 PostImgUrl postImgUrl = postImgUrlService.findImgUrlByPost(post);
                 Integer countLike = likePostService.countLikePost(post);
@@ -88,18 +88,16 @@ public class PostService {
                     recentCommentDto = null;
                 }
                 else{
-                    Member recentCommentWriter = recentComment.getMember();
                     //댓글 writer
-                    WriterDto commentWriter = new WriterDto(recentCommentWriter.getMemberId(),recentCommentWriter.getName(),recentCommentWriter.getImgUrl());
+                    WriterDto commentWriter = toWriterDto(recentComment.getMember());
                     //commentDto
                     recentCommentDto = RecentCommentDto.from(recentComment,commentWriter);
                 }
 
                 //게시물 writer
-                WriterDto postWriter = new WriterDto(post.getMember().getMemberId(), post.getMember().getName(), post.getMember().getImgUrl());
+                WriterDto postWriter = toWriterDto(post.getMember());
 
                 PostImgUrl postImgUrl = postImgUrlService.findImgUrlByPost(post);
-
                 Integer countLike = likePostService.countLikePost(post);
 
                 PostResponseDto dto = PostResponseDto.from(post, post.getPlace(), postWriter,
@@ -112,6 +110,9 @@ public class PostService {
     }
 
 
+    public WriterDto toWriterDto(Member member){
+        return new WriterDto(member.getMemberId(),member.getName(),member.getImgUrl());
+    }
 
     // 그룹 게시글 찾기 (최신순)
     @Transactional(readOnly = true)
