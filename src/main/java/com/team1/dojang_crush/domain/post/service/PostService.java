@@ -31,8 +31,8 @@ public class PostService {
 
 
     // 새로운 게시글 작성
-    public Post createPost(Long memberId, String content, Long placeId, Long groupId, LocalDate visitedDate, List<MultipartFile> images) {
-        Member member = memberService.findMemberById(memberId);
+    public Post createPost(Member member, String content, Long placeId, Long groupId, LocalDate visitedDate, List<MultipartFile> images) {
+        
         Place place = placeService.findPlaceById(placeId);
 
         Post post = new Post(content,visitedDate,member,place);
