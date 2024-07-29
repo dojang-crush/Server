@@ -8,6 +8,7 @@ import com.team1.dojang_crush.domain.place.domain.Place;
 import com.team1.dojang_crush.domain.place.dto.AllPlacesResponseDto;
 import com.team1.dojang_crush.domain.place.dto.PlaceResponseDto;
 import com.team1.dojang_crush.domain.place.service.PlaceService;
+import com.team1.dojang_crush.global.oauth.AuthUser;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -44,16 +45,16 @@ public class PlaceController {
     }
 
     // 내가 좋아요 한 장소 조회
-    @GetMapping("liked/{memberId}")
-    @ResponseStatus(value = HttpStatus.OK)
-    public AllPlacesResponseDto getLikedPlaces(@PathVariable(name = "memberId") Long memberId) {
-
-//    @GetMapping("liked")
+//    @GetMapping("liked/{memberId}")
 //    @ResponseStatus(value = HttpStatus.OK)
-//    public AllPlacesResponseDto getLikedPlaces(@AuthUser Member member) {
+//    public AllPlacesResponseDto getLikedPlaces(@PathVariable(name = "memberId") Long memberId) {
+
+    @GetMapping("liked")
+    @ResponseStatus(value = HttpStatus.OK)
+    public AllPlacesResponseDto getLikedPlaces(@AuthUser Member member) {
 
         List<Place> likedPlaceList = new ArrayList<>();
-        Member member = memberService.findMemberById(memberId);
+//        Member member = memberService.findMemberById(memberId);
 
         List<LikePlace> likePlaces = likePlaceService.findLikePlaceByMember(member);
         for (LikePlace likePlace : likePlaces) {
@@ -88,14 +89,15 @@ public class PlaceController {
 
     }
 
-
     // 내가 좋아요 한 장소 테마별 조회
-    @GetMapping("liked/{memberId}/{theme}")
-    @ResponseStatus(value = HttpStatus.OK)
-//    public AllPlacesResponseDto getLikedThemePlaces(@AuthUser Member member,
+//    @GetMapping("liked/{memberId}/{theme}")
+//    @ResponseStatus(value = HttpStatus.OK)
+//    public AllPlacesResponseDto getLikedThemePlaces(@PathVariable(name = "memberId") Long memberId,
 //                                                    @PathVariable(name = "theme") String theme) {
 
-    public AllPlacesResponseDto getLikedThemePlaces(@PathVariable(name = "memberId") Long memberId,
+    @GetMapping("liked/{theme}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public AllPlacesResponseDto getLikedThemePlaces(@AuthUser Member member,
                                                     @PathVariable(name = "theme") String theme) {
 
         // 1: 테마로 먼저 <Place> 필터링 -> 이게 전체집합이 되는걸로..해서 이후엔 "내가 좋아요 한 장소 조회" 로직과 동일하게
@@ -103,7 +105,7 @@ public class PlaceController {
 
         List<Place> likedThemePlaceList = new ArrayList<>();
 
-        Member member = memberService.findMemberById(memberId);
+//        Member member = memberService.findMemberById(memberId);
         List<LikePlace> likePlaces = likePlaceService.findLikePlaceByMember(member);
 
         for (LikePlace likePlace : likePlaces) {
