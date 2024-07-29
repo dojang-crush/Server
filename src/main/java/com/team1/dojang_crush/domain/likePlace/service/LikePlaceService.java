@@ -57,6 +57,7 @@ public class LikePlaceService {
 
     public List<LikePlace> findLikePlaceByMember(Member member) {
         return likePlaceRepository.findByMember(member);
+    }
 
     public List<LikePlace> findLikePlaceByPlaceId(Long placeId) {
         return likePlaceRepository.findByPlacePlaceId(placeId);
