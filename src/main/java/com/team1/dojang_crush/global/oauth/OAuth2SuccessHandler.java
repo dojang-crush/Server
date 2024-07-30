@@ -1,19 +1,18 @@
 package com.team1.dojang_crush.global.oauth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team1.dojang_crush.domain.member.domain.dto.MemberRequestDTO;
+import com.team1.dojang_crush.domain.member.dto.MemberRequestDTO;
 import com.team1.dojang_crush.global.utils.JWTUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +22,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                        Authentication authentication) throws IOException, ServletException {
 
         // 정보 추출
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
@@ -35,7 +35,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         // 토큰 형성
         String token = jwtUtils.createToken(dto);
-        Oauth2Response oauth2Response = new Oauth2Response("Bearer "+token);
+        Oauth2Response oauth2Response = new Oauth2Response("Bearer " + token);
 
         // http response 보내기
         response.setStatus(HttpServletResponse.SC_OK);
@@ -47,7 +47,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     @AllArgsConstructor
     @Getter
-    class Oauth2Response{
+    class Oauth2Response {
         private String data;
     }
 }
