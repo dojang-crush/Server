@@ -61,9 +61,9 @@ public class PostController {
                                           @AuthUser Member member){
 
         // 그룹의 모든 post 찾기
-        List<Post> posts = postService.findAllPosts(groupId);
+        List<Post> posts = postService.findAllPosts(groupId, member);
 
-        List<PostResponseDto> list = postService.postsToDtos(posts,member, "all");
+        List<PostResponseDto> list = postService.postsToDtos(posts, member, "all");
         return new AllPostResponseDto(groupId, list, list.size());
     }
 
@@ -76,11 +76,28 @@ public class PostController {
                                            @AuthUser Member member){
 
         // 그룹과 날짜로 posts 찾기
-        List<Post> posts = postService.findPostsByDate1(groupId, visitedDate);
+        List<Post> posts = postService.findPostsByDate1(groupId, visitedDate, member);
 
         List<PostResponseDto> list = postService.postsToDtos(posts,member, "date");
         return new AllPostResponseDto(groupId, list, list.size());
     }
+
+
+    // 그룹 월별 게시글 조회
+    @GetMapping("/{groupId}/month/{month}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public AllPostResponseDto getMonthPosts(@PathVariable(name = "groupId")Long groupId,
+                                            @PathVariable(name = "month")Long month,
+                                           @AuthUser Member member){
+
+        // 그룹과 월로 posts 찾기
+        List<Post> posts = postService.findPostsByMonth(groupId, month, member);
+
+        List<PostResponseDto> list = postService.postsToDtos(posts,member, "date");
+        return new AllPostResponseDto(groupId, list, list.size());
+    }
+
+
 
     // 게시글 1개 조회
     @GetMapping("/{postId}")
@@ -109,7 +126,7 @@ public class PostController {
                                       @RequestParam(value = "images", required = false) List<MultipartFile> images,
                                       @AuthUser Member member){
 
-        Post post = postService.updatePost(postId, content, placeId, groupId, visitedDate, images);
+        Post post = postService.updatePost(postId, content, placeId, groupId, visitedDate, images, member);
         PostImgUrl postImgUrl = postImgUrlService.findImgUrlByPost(post);
         Integer countLike = likePostService.countLikePost(post);
 
@@ -123,7 +140,7 @@ public class PostController {
     @ResponseStatus(value = HttpStatus.OK)
     public String deletePost(@PathVariable(name = "postId")Long postId,
                              @AuthUser Member member){
-        postService.deletePost(postId);
+        postService.deletePost(postId, member);
 
         return "게시글이 삭제되었습니다.";
     }
