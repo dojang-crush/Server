@@ -37,6 +37,8 @@ public class OAuth2LoginController {
 
     @GetMapping
     public ResponseEntity<Oauth2Response> oauth2Login(@RequestParam(name = "code")String code){
+        System.out.println("OAuth2LoginController.oauth2Login");
+        System.out.println(code);
         String accessToken="";
         MemberRequestDTO dto=null;
         try{
@@ -48,6 +50,8 @@ public class OAuth2LoginController {
         }
 
         String token = "Bearer "+jwtUtils.createToken(dto);
+
+        System.out.println("토큰이 이렇게 만들어짐: "+token);
 
         return ResponseEntity.ok().body(new Oauth2Response(token));
 
