@@ -29,7 +29,7 @@ public record OAuth2UserInfo(
         Map<String, Object> profile = (Map<String, Object>) account.get("profile");
 
         return OAuth2UserInfo.builder()
-                .nickname((String) account.get("nickname"))
+                .nickname((String) profile.get("nickname"))
                 .email((String) account.get("email"))
                 .image((String) profile.get("profile_image_url"))
                 .build();
