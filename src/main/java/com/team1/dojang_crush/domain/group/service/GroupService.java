@@ -5,43 +5,22 @@ import com.team1.dojang_crush.domain.group.dto.GroupMemberDto;
 import com.team1.dojang_crush.domain.group.repository.GroupRepository;
 import com.team1.dojang_crush.domain.member.domain.Member;
 import com.team1.dojang_crush.domain.member.service.MemberService;
-import com.team1.dojang_crush.domain.post.domain.Post;
 import com.team1.dojang_crush.global.exception.AppException;
 import com.team1.dojang_crush.global.exception.ErrorCode;
 import jakarta.persistence.EntityNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class GroupService {
-
-    //private final S3Service s3Service;
     private final MemberService memberService;
     private final GroupRepository groupRepository;
-
-    //그룹 생성
-//    public Group createGroup(String groupName, MultipartFile image, Member member) {
-//
-//        try{
-//            String groupCode = createGroupCode(groupName);
-//
-//            String Url = s3Service.uploadFiles(image);
-//            Group group = new Group(groupName, groupCode, Url);
-//
-//            return groupRepository.save(group);
-//        }
-//        catch(Exception e){
-//            throw new RuntimeException("이미지 업로드 중 오류가 발생했습니다.");
-//        }
-//    }
 
     // 그룹생성
     public Group createGroup(String groupName, Member member) {
@@ -82,54 +61,51 @@ public class GroupService {
     }
 
 
-    // 그룹 이미지 수정
-//    public Group updateImage(Long groupId, MultipartFile image) {
-//
-//        try{
-//            Group group = findById(groupId);
-//            String url = s3Service.uploadFiles(image);
-//
-//            group.updateImg(url);
-//            return group;
-//        }
-//        catch(Exception e){
-//            throw new RuntimeException("이미지 업로드 중 오류가 발생했습니다.");
-//        }
-//    }
-
-
     // 그룹 이름 수정
-    public Group updateName(Long groupId, String groupName) {
+    public Group updateName(Long groupId, String groupName, Member member) {
 
-        Group group = findById(groupId);
-        group.updateName(groupName);
+        if(member.getGroup().getGroupId().equals(groupId)){
+            Group group = findById(groupId);
+            group.updateName(groupName);
 
-        return group;
+            return group;
+        }
+        else{
+            throw new AppException(ErrorCode.INVALID_REQUEST, "수정 권한이 없습니다.");
+        }
     }
 
     // 그룹원 조회
-    public List<GroupMemberDto> getMembers(Long groupId) {
-        Group group = findById(groupId);
+    public List<GroupMemberDto> getMembers(Long groupId, Member member) {
 
-        List<Member> members = memberService.findGroupMemberList(group.getGroupId());
+        if(member.getGroup().getGroupId().equals(groupId)){
+            Group group = findById(groupId);
 
-        List<GroupMemberDto> memberDto = new ArrayList<>();
-        for(Member member: members){
-            memberDto.add(GroupMemberDto.from(member));
+            List<Member> members = memberService.findGroupMemberList(group.getGroupId());
+
+            List<GroupMemberDto> memberDto = new ArrayList<>();
+            for(Member m: members){
+                memberDto.add(GroupMemberDto.from(m));
+            }
+
+            return memberDto;
         }
-
-        return memberDto;
+        else{
+            throw new AppException(ErrorCode.INVALID_REQUEST, "그룹원 조회 권한이 없습니다.");
+        }
     }
 
 
     // 그룹 삭제
     public void delete(Long groupId, Member member) {
-        if(member.isLead()){
+        if(member.isLead() && member.getGroup().getGroupId().equals(groupId)){
             Group group = findById(groupId);
             List<Member> members = memberService.findGroupMemberList(groupId);
+            Group defaultGroup = groupRepository.findByGroupCode("DEFAULT");
 
             for(Member m: members){
-                // member의 그룹 default로
+                //삭제되는 그룹 멤버들의 그룹을 default 변경
+                m.setGroup(defaultGroup);
             }
             groupRepository.delete(group);
         }
