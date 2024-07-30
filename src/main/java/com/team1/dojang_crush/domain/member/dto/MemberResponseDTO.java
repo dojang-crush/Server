@@ -1,17 +1,15 @@
-
-package com.team1.dojang_crush.domain.member.domain.dto;
+package com.team1.dojang_crush.domain.member.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberRequestDTO {
+public class MemberResponseDTO {
+    private Long id;
     private String nickname;
     private String email;
-    private String imgUrl; //
+    private String imgUrl;
 }

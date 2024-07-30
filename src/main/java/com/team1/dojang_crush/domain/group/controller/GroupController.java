@@ -30,6 +30,7 @@ public class GroupController {
     private final GroupService groupService;
     private final MemberService memberService;
 
+
     //그룹 생성
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)

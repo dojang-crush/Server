@@ -5,7 +5,9 @@ import com.team1.dojang_crush.domain.likePost.repository.LikePostRepository;
 import com.team1.dojang_crush.domain.member.domain.Member;
 import com.team1.dojang_crush.domain.member.service.MemberService;
 import com.team1.dojang_crush.domain.post.domain.Post;
-import com.team1.dojang_crush.domain.post.service.PostService;
+import com.team1.dojang_crush.domain.post.repository.PostRepository;
+import com.team1.dojang_crush.global.exception.AppException;
+import com.team1.dojang_crush.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,13 +19,14 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class LikePostService {
     private final LikePostRepository likePostRepository;
-    private final PostService postService;
+    private final PostRepository postRepository;
     private final MemberService memberService;
 
     // 좋아요 누르기
     public void create(Long postId, Long memberId){
         Member member = memberService.findMemberById(memberId);
-        Post post = postService.findPostById(postId);
+        Post post = postRepository.findById(postId)
+                .orElseThrow(()-> new AppException(ErrorCode.NOT_FOUND_POST,"해당 ID의 POST를 찾을 수 없습니다."));
 
         if(isExistsByMemberAndPost(member, post)){
             throw new RuntimeException("이미 좋아요를 누름 게시물입니다.");
@@ -45,7 +48,8 @@ public class LikePostService {
 
     //좋아요 취소
     public void delete(Long postId, Long memberId){
-        Post post = postService.findPostById(postId);
+        Post post = postRepository.findById(postId)
+                .orElseThrow(()-> new AppException(ErrorCode.NOT_FOUND_POST,"해당 ID의 POST를 찾을 수 없습니다."));
         Member member = memberService.findMemberById(memberId);
 
         LikePost likePost = likePostRepository.findByMemberAndPost(member,post)
@@ -59,6 +63,4 @@ public class LikePostService {
         Integer count = likePostRepository.countByPost(post);
         return count;
     }
-    
-    
 }
