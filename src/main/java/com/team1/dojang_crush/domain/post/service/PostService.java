@@ -2,9 +2,9 @@ package com.team1.dojang_crush.domain.post.service;
 
 import com.team1.dojang_crush.domain.comment.domain.Comment;
 import com.team1.dojang_crush.domain.comment.service.CommentService;
+import com.team1.dojang_crush.domain.group.service.GroupService;
 import com.team1.dojang_crush.domain.likePost.service.LikePostService;
 import com.team1.dojang_crush.domain.member.domain.Member;
-import com.team1.dojang_crush.domain.member.service.MemberService;
 import com.team1.dojang_crush.domain.place.domain.Place;
 import com.team1.dojang_crush.domain.place.service.PlaceService;
 import com.team1.dojang_crush.domain.post.domain.Post;
@@ -32,11 +32,11 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
-    private final MemberService memberService;
     private final PlaceService placeService;
     private final PostImgUrlService postImgUrlService;
     private final LikePostService likePostService;
     private final CommentService commentService;
+    private final GroupService groupService;
 
 
     // 새로운 게시글 작성
@@ -122,7 +122,7 @@ public class PostService {
 
         if(member.getGroup().getGroupId().equals(groupId)){
             // 그룹아이디로 해당 그룹 멤버들 찾음
-            List<Member> members = memberService.findGroupMemberList(groupId);
+            List<Member> members = groupService.findGroupMemberList(groupId);
 
             List<Post> posts = new ArrayList<>();
             // 멤버들로 post 찾음

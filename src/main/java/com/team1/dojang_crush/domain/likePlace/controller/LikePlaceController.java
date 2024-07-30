@@ -1,5 +1,6 @@
 package com.team1.dojang_crush.domain.likePlace.controller;
 
+import com.team1.dojang_crush.domain.group.service.GroupService;
 import com.team1.dojang_crush.domain.likePlace.domain.LikePlace;
 import com.team1.dojang_crush.domain.likePlace.domain.dto.AllGetLikePlaceResponseDto;
 import com.team1.dojang_crush.domain.likePlace.domain.dto.CreateLikePlaceRequestDto;
@@ -8,7 +9,6 @@ import com.team1.dojang_crush.domain.likePlace.domain.dto.DeleteLikePlaceRequest
 import com.team1.dojang_crush.domain.likePlace.domain.dto.GetLikePlaceResponseDto;
 import com.team1.dojang_crush.domain.likePlace.service.LikePlaceService;
 import com.team1.dojang_crush.domain.member.domain.Member;
-import com.team1.dojang_crush.domain.member.service.MemberService;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class LikePlaceController {
 
     private final LikePlaceService likePlaceService;
-    private final MemberService memberService;
+    private final GroupService groupService;
 
 
     // 장소 좋아요 생성
@@ -57,7 +57,7 @@ public class LikePlaceController {
 
         // 1: placeId로 먼저 <likePlace> 필터링
         List<LikePlace> likePlaces = likePlaceService.findLikePlaceByPlaceId(placeId);
-        List<Member> likeMembers = memberService.findGroupMemberList(groupId);
+        List<Member> likeMembers = groupService.findGroupMemberList(groupId);
 
         // 2: likeMembers의 멤버들 중, placeId = x 인 LikePlace가 존재하는 Member들을 필터링하기
         List<Member> likePlaceMemberList = new ArrayList<>();

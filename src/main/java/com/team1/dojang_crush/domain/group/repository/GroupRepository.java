@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GroupRepository extends JpaRepository<Group, Long> {
     Group findByGroupCode(String groupCode);
+
+    Group findByGroupName(String name);
 }

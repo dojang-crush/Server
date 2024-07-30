@@ -27,9 +27,13 @@ public class GroupService {
 
         String groupCode = createGroupCode(groupName);
         Group group = new Group(groupName, groupCode);
-        member.setGroup(group);
 
-        return groupRepository.save(group);
+        Group savedgroup = groupRepository.save(group);
+
+        memberService.updateGroup(savedgroup, member);
+        memberService.updateLeader(member, true);
+
+        return savedgroup;
     }
 
 
@@ -46,7 +50,10 @@ public class GroupService {
         Group group = groupRepository.findByGroupCode(groupCode);
 
         if(group != null){
-            member.setGroup(group);
+            if(member.isLead()){
+                memberService.updateLeader(member,false);
+            }
+            memberService.updateGroup(group, member);
             return group;
         }
         else{
@@ -61,12 +68,20 @@ public class GroupService {
     }
 
 
+    // 그룹에 속하는 member들 찾기
+    public List<Member> findGroupMemberList(Long groupId) {
+        Group group = findById(groupId);
+        return group.getMembers();
+    }
+
+
     // 그룹 이름 수정
     public Group updateName(Long groupId, String groupName, Member member) {
 
         if(member.getGroup().getGroupId().equals(groupId)){
             Group group = findById(groupId);
             group.updateName(groupName);
+            groupRepository.save(group);
 
             return group;
         }
@@ -81,7 +96,7 @@ public class GroupService {
         if(member.getGroup().getGroupId().equals(groupId)){
             Group group = findById(groupId);
 
-            List<Member> members = memberService.findGroupMemberList(group.getGroupId());
+            List<Member> members = findGroupMemberList(group.getGroupId());
 
             List<GroupMemberDto> memberDto = new ArrayList<>();
             for(Member m: members){
@@ -100,13 +115,14 @@ public class GroupService {
     public void delete(Long groupId, Member member) {
         if(member.isLead() && member.getGroup().getGroupId().equals(groupId)){
             Group group = findById(groupId);
-            List<Member> members = memberService.findGroupMemberList(groupId);
-            Group defaultGroup = groupRepository.findByGroupCode("DEFAULT");
+            Group defaultGroup = groupRepository.findByGroupName("DEFAULT");
+            List<Member> members = findGroupMemberList(groupId);
 
             for(Member m: members){
                 //삭제되는 그룹 멤버들의 그룹을 default 변경
-                m.setGroup(defaultGroup);
+                memberService.updateGroup(defaultGroup, m);
             }
+            memberService.updateLeader(member, false);
             groupRepository.delete(group);
         }
         else{
