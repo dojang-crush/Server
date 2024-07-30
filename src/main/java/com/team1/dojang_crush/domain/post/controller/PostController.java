@@ -58,10 +58,11 @@ public class PostController {
     @GetMapping("/all/{groupId}")
     @ResponseStatus(value = HttpStatus.OK)
     public AllPostResponseDto getAllPosts(@PathVariable(name = "groupId")Long groupId,
+                                          @RequestParam("page")int page,
                                           @AuthUser Member member){
 
         // 그룹의 모든 post 찾기
-        List<Post> posts = postService.findAllPosts(groupId, member);
+        List<Post> posts = postService.findAllPosts(groupId, member, page);
 
         List<PostResponseDto> list = postService.postsToDtos(posts, member, "all");
         return new AllPostResponseDto(groupId, list, list.size());

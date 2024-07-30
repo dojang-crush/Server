@@ -20,6 +20,7 @@ import jakarta.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -118,7 +119,7 @@ public class PostService {
 
     // 그룹 게시글 찾기 (최신순)
     @Transactional(readOnly = true)
-    public List<Post> findAllPosts(Long groupId, Member member) {
+    public List<Post> findAllPosts(Long groupId, Member member, int page) {
 
         if(member.getGroup().getGroupId().equals(groupId)){
             // 그룹아이디로 해당 그룹 멤버들 찾음
@@ -134,9 +135,20 @@ public class PostService {
             }
 
             // 최신순으로 정렬
-            return posts.stream()
+            List<Post> sortedPosts = posts.stream()
                     .sorted((post1, post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt())) // 내림차순 정렬
                     .collect(Collectors.toList());
+
+            // 페이지네이션
+            int pageIndex = page - 1;
+            int start = pageIndex * 5;
+            int end = Math.min(start + 5, sortedPosts.size());
+
+            if (start >= sortedPosts.size()) {
+                return Collections.emptyList(); // 요청한 페이지가 범위를 초과하는 경우 빈 리스트 반환
+            }
+            return sortedPosts.subList(start, end);
+
         }
         else{
             throw new AppException(ErrorCode.INVALID_REQUEST,"해당 그룹의 게시글 조회 권한이 없습니다.");
@@ -212,7 +224,15 @@ public class PostService {
     public List<Post> findPostsByMonth(Long groupId, Long year, Long month, Member member) {
 
         if(member.getGroup().getGroupId().equals(groupId)){
-            List<Post> posts = findAllPosts(groupId, member);
+            List<Member> members = groupService.findGroupMemberList(groupId);
+
+            List<Post> posts = new ArrayList<>();
+            for(Member member1 : members) {
+                List<Post> memberPosts = postRepository.findAllByMember(member1);
+                for (Post post : memberPosts) {
+                    posts.add(post);
+                }
+            }
 
             List<Post> filteredPosts = posts.stream()
                     .filter(post -> post.getVisitedDate().getYear() == year &&
