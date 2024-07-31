@@ -5,6 +5,8 @@ import com.team1.dojang_crush.domain.group.repository.GroupRepository;
 import com.team1.dojang_crush.domain.member.domain.Member;
 import com.team1.dojang_crush.domain.member.repository.MemberRepository;
 
+import com.team1.dojang_crush.global.exception.AppException;
+import com.team1.dojang_crush.global.exception.ErrorCode;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -52,13 +54,18 @@ public class MemberService {
                 .orElseThrow(() -> new NoSuchElementException("Member not found with email: " + email)));
     };
 
-    // 그룹에 속하는 member들 찾기
-    public List<Member> findGroupMemberList(Long groupId) {
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new EntityNotFoundException("그룹을 찾을 수 없습니다"));
-        List<Member> memberList = memberRepository.findAllByGroup(group);
-        return memberList;
+
+
+
+    // group 업데이트
+    public void updateGroup(Group group, Member member) {
+        member.updateGroup(group);
+        memberRepository.save(member);
     }
 
+    public void updateLeader(Member member, boolean b) {
+        member.updateLead(b);
+        memberRepository.save(member);
+    }
 }
 

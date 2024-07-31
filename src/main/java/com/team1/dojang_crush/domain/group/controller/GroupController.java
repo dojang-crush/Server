@@ -7,7 +7,6 @@ import com.team1.dojang_crush.domain.group.dto.GroupMemberDto;
 import com.team1.dojang_crush.domain.group.dto.GroupResponseDto;
 import com.team1.dojang_crush.domain.group.service.GroupService;
 import com.team1.dojang_crush.domain.member.domain.Member;
-import com.team1.dojang_crush.domain.member.service.MemberService;
 import com.team1.dojang_crush.global.oauth.AuthUser;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/group")
 public class GroupController {
     private final GroupService groupService;
-    private final MemberService memberService;
 
 
     //그룹 생성
@@ -54,7 +52,7 @@ public class GroupController {
         String groupCode = dto.getGroupCode();
 
         Group group = groupService.addMember(groupCode,member);
-        List<Member> members= memberService.findGroupMemberList(group.getGroupId());
+        List<Member> members= groupService.findGroupMemberList(group.getGroupId());
 
         return GroupResponseDto.from(group, members, null);
     }
@@ -79,7 +77,7 @@ public class GroupController {
                                             @AuthUser Member member){
 
         Group group = groupService.updateName(groupId, dto.getGroupName(), member);
-        List<Member> members= memberService.findGroupMemberList(group.getGroupId());
+        List<Member> members= groupService.findGroupMemberList(group.getGroupId());
 
         return GroupResponseDto.from(group, members, null);
     }
