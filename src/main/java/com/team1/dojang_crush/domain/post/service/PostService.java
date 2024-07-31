@@ -2,9 +2,9 @@ package com.team1.dojang_crush.domain.post.service;
 
 import com.team1.dojang_crush.domain.comment.domain.Comment;
 import com.team1.dojang_crush.domain.comment.service.CommentService;
+import com.team1.dojang_crush.domain.group.service.GroupService;
 import com.team1.dojang_crush.domain.likePost.service.LikePostService;
 import com.team1.dojang_crush.domain.member.domain.Member;
-import com.team1.dojang_crush.domain.member.service.MemberService;
 import com.team1.dojang_crush.domain.place.domain.Place;
 import com.team1.dojang_crush.domain.place.service.PlaceService;
 import com.team1.dojang_crush.domain.post.domain.Post;
@@ -20,6 +20,7 @@ import jakarta.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -32,11 +33,11 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
-    private final MemberService memberService;
     private final PlaceService placeService;
     private final PostImgUrlService postImgUrlService;
     private final LikePostService likePostService;
     private final CommentService commentService;
+    private final GroupService groupService;
 
 
     // 새로운 게시글 작성
@@ -118,11 +119,11 @@ public class PostService {
 
     // 그룹 게시글 찾기 (최신순)
     @Transactional(readOnly = true)
-    public List<Post> findAllPosts(Long groupId, Member member) {
+    public List<Post> findAllPosts(Long groupId, Member member, int page) {
 
         if(member.getGroup().getGroupId().equals(groupId)){
             // 그룹아이디로 해당 그룹 멤버들 찾음
-            List<Member> members = memberService.findGroupMemberList(groupId);
+            List<Member> members = groupService.findGroupMemberList(groupId);
 
             List<Post> posts = new ArrayList<>();
             // 멤버들로 post 찾음
@@ -134,9 +135,20 @@ public class PostService {
             }
 
             // 최신순으로 정렬
-            return posts.stream()
+            List<Post> sortedPosts = posts.stream()
                     .sorted((post1, post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt())) // 내림차순 정렬
                     .collect(Collectors.toList());
+
+            // 페이지네이션
+            int pageIndex = page - 1;
+            int start = pageIndex * 5;
+            int end = Math.min(start + 5, sortedPosts.size());
+
+            if (start >= sortedPosts.size()) {
+                return Collections.emptyList(); // 요청한 페이지가 범위를 초과하는 경우 빈 리스트 반환
+            }
+            return sortedPosts.subList(start, end);
+
         }
         else{
             throw new AppException(ErrorCode.INVALID_REQUEST,"해당 그룹의 게시글 조회 권한이 없습니다.");
@@ -170,9 +182,10 @@ public class PostService {
 
         Post post = findPostById(postId);
 
-        if(post.getMember().equals(member)){
+        if(post.getMember().getMemberId().equals(member.getMemberId())){
             Place place = placeService.findPlaceById(placeId);
             post.update(content, place, visitedDate);
+            postRepository.save(post);
 
             if(images == null){
                 // 이미지 삭제
@@ -199,7 +212,7 @@ public class PostService {
     public void deletePost(Long postId, Member member) {
         Post post = findPostById(postId);
 
-        if(post.getMember().equals(member)){
+        if(post.getMember().getMemberId().equals(member.getMemberId())){
             postRepository.delete(post);
         }
         else{
@@ -208,14 +221,28 @@ public class PostService {
     }
 
     //그룹 게시글 월별 찾기
-    public List<Post> findPostsByMonth(Long groupId, Long month, Member member) {
+    public List<Post> findPostsByMonth(Long groupId, Long year, Long month, Member member) {
 
-        List<Post> posts = findAllPosts(groupId, member);
+        if(member.getGroup().getGroupId().equals(groupId)){
+            List<Member> members = groupService.findGroupMemberList(groupId);
 
-        List<Post> filteredPosts = posts.stream()
-                .filter(post -> post.getVisitedDate().getMonthValue() == month)
-                .collect(Collectors.toList());
+            List<Post> posts = new ArrayList<>();
+            for(Member member1 : members) {
+                List<Post> memberPosts = postRepository.findAllByMember(member1);
+                for (Post post : memberPosts) {
+                    posts.add(post);
+                }
+            }
 
-        return filteredPosts;
+            List<Post> filteredPosts = posts.stream()
+                    .filter(post -> post.getVisitedDate().getYear() == year &&
+                            post.getVisitedDate().getMonthValue() == month)
+                    .collect(Collectors.toList());
+
+            return filteredPosts;
+        }
+        else{
+            throw new AppException(ErrorCode.INVALID_REQUEST, "해당 그룹의 게시글 조회 권한이 없습니다.");
+        }
     }
 }

@@ -102,6 +102,7 @@ public class PostImgUrlService {
 
             //새로운 url로 업데이트
             postImgUrl.update(uploadedUrls);
+            postImgUrlRepository.save(postImgUrl);
             return postImgUrl;
         }
 

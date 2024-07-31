@@ -58,10 +58,11 @@ public class PostController {
     @GetMapping("/all/{groupId}")
     @ResponseStatus(value = HttpStatus.OK)
     public AllPostResponseDto getAllPosts(@PathVariable(name = "groupId")Long groupId,
+                                          @RequestParam("page")int page,
                                           @AuthUser Member member){
 
         // 그룹의 모든 post 찾기
-        List<Post> posts = postService.findAllPosts(groupId, member);
+        List<Post> posts = postService.findAllPosts(groupId, member, page);
 
         List<PostResponseDto> list = postService.postsToDtos(posts, member, "all");
         return new AllPostResponseDto(groupId, list, list.size());
@@ -84,14 +85,15 @@ public class PostController {
 
 
     // 그룹 월별 게시글 조회
-    @GetMapping("/{groupId}/month/{month}")
+    @GetMapping("/{groupId}/year/{year}/month/{month}")
     @ResponseStatus(value = HttpStatus.OK)
     public AllPostResponseDto getMonthPosts(@PathVariable(name = "groupId")Long groupId,
+                                            @PathVariable(name = "year")Long year,
                                             @PathVariable(name = "month")Long month,
                                            @AuthUser Member member){
 
         // 그룹과 월로 posts 찾기
-        List<Post> posts = postService.findPostsByMonth(groupId, month, member);
+        List<Post> posts = postService.findPostsByMonth(groupId, year, month, member);
 
         List<PostResponseDto> list = postService.postsToDtos(posts,member, "date");
         return new AllPostResponseDto(groupId, list, list.size());
