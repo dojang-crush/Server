@@ -46,8 +46,8 @@ public class PostResponseDto {
         return new PostResponseDto(
                 savedPost.getPostId(),
                 content,
-                "#"+place.getTheme(),
-                "#"+place.getPlaceName(),
+                place.getTheme(),
+                place.getPlaceName(),
                 savedPost.getCreatedAt(),
                 savedPost.getVisitedDate(),
                 writerDto,
@@ -71,8 +71,8 @@ public class PostResponseDto {
         return new PostResponseDto(
                 savedPost.getPostId(),
                 content,
-                "#"+place.getTheme(),
-                "#"+place.getPlaceName(),
+                place.getTheme(),
+                place.getPlaceName(),
                 savedPost.getCreatedAt(),
                 savedPost.getVisitedDate(),
                 writerDto,
