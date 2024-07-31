@@ -90,4 +90,12 @@ public class Member extends BaseEntity {
     public static Member createWithDefaultGroup(String name, String imgUrl, String email, Group defaultGroup) {
         return new Member(name, imgUrl, email, defaultGroup);
     }
+
+    public void updateGroup(Group newGroup) {
+        this.group = newGroup;
+    }
+
+    public void updateLead(boolean b) {
+        this.isLead = b;
+    }
 }
