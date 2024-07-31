@@ -38,7 +38,7 @@ public class OAuth2Service {
 
     public String getAccessOAuth2Token(String clientId, String code) throws IOException {
         String reqURL = "https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id="+clientId
-                +"&redirect_id"+redirectUri
+                +"&redirect_id="+redirectUri
                 +"&code="+code
                 +"&client_secret="+clientSecret;
         URL url=new URL(reqURL);
