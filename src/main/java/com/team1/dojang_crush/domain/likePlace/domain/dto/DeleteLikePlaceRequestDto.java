@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class DeleteLikePlaceRequestDto {
 
     private Long placeId;
-    private Long memberId;
+//    private Long memberId;
 
 }
 

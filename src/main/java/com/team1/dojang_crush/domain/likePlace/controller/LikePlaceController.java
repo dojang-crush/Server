@@ -9,6 +9,7 @@ import com.team1.dojang_crush.domain.likePlace.domain.dto.DeleteLikePlaceRequest
 import com.team1.dojang_crush.domain.likePlace.domain.dto.GetLikePlaceResponseDto;
 import com.team1.dojang_crush.domain.likePlace.service.LikePlaceService;
 import com.team1.dojang_crush.domain.member.domain.Member;
+import com.team1.dojang_crush.global.oauth.AuthUser;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -32,18 +33,25 @@ public class LikePlaceController {
 
 
     // 장소 좋아요 생성
+//    @PostMapping
+//    @ResponseStatus(value = HttpStatus.CREATED)
+//    public CreateLikePlaceResponseDto createLikePlace(@RequestBody final CreateLikePlaceRequestDto requestDto) {
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
-    public CreateLikePlaceResponseDto createLikePlace(@RequestBody final CreateLikePlaceRequestDto requestDto) {
-        LikePlace createdLikePlace = likePlaceService.create(requestDto.getPlaceId(), requestDto.getMemberId());
+    public CreateLikePlaceResponseDto createLikePlace(@AuthUser Member member,
+                                                      @RequestBody final CreateLikePlaceRequestDto requestDto) {
+        LikePlace createdLikePlace = likePlaceService.create(requestDto.getPlaceId(), member.getMemberId());
         return CreateLikePlaceResponseDto.from(createdLikePlace);
     }
 
     // 장소 좋아요 삭제
+//    @DeleteMapping
+//    @ResponseStatus(value = HttpStatus.OK)
+//    public String deleteLikePlace(@RequestBody final DeleteLikePlaceRequestDto requestDto) {
     @DeleteMapping
     @ResponseStatus(value = HttpStatus.OK)
-    public String deleteLikePlace(@RequestBody final DeleteLikePlaceRequestDto requestDto) {
-        likePlaceService.delete(requestDto.getPlaceId(), requestDto.getMemberId());
+    public String deleteLikePlace(@AuthUser Member member, @RequestBody final DeleteLikePlaceRequestDto requestDto) {
+        likePlaceService.delete(requestDto.getPlaceId(), member.getMemberId());
         return "장소 좋아요가 성공적으로 삭제되었습니다.";
     }
 
@@ -51,7 +59,8 @@ public class LikePlaceController {
     // 장소 좋아요 조회 (장소별로 그룹원들 중 좋아요 누른 사람들의 정보를 조회합니다.): placeId -> likePlace 리스트 -> groupId로  memberId 리스트 -> dto로, return
     @GetMapping("{placeId}/{groupId}")
     @ResponseStatus(value = HttpStatus.OK)
-    public AllGetLikePlaceResponseDto getLikePlace(@PathVariable(name = "placeId") Long placeId,
+    public AllGetLikePlaceResponseDto getLikePlace(@AuthUser Member member,
+                                                   @PathVariable(name = "placeId") Long placeId,
                                                    @PathVariable(name = "groupId") Long groupId) {
         System.out.println("0");
 
@@ -78,8 +87,8 @@ public class LikePlaceController {
 
         List<GetLikePlaceResponseDto> list = new ArrayList<>();
 
-        for (Member member : likePlaceMemberList) {
-            GetLikePlaceResponseDto dto = GetLikePlaceResponseDto.from(member);
+        for (Member likePlaceMember : likePlaceMemberList) {
+            GetLikePlaceResponseDto dto = GetLikePlaceResponseDto.from(likePlaceMember);
             list.add(dto);
         }
 
