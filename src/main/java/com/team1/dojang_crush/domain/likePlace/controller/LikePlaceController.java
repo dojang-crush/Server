@@ -70,6 +70,9 @@ public class LikePlaceController {
 
         // 2: likeMembers의 멤버들 중, placeId = x 인 LikePlace가 존재하는 Member들을 필터링하기
         List<Member> likePlaceMemberList = new ArrayList<>();
+
+        String response = "";
+
         for (LikePlace likePlace : likePlaces) {
             System.out.println("1");
 
@@ -77,11 +80,15 @@ public class LikePlaceController {
                 if (likePlace.getMember().getMemberId() == likeMember.getMemberId()) {
                     System.out.println("해당 장소를 좋아요한 member의 Id:" + likeMember.getMemberId());
                     likePlaceMemberList.add(likeMember);
+
+                    response = response + likeMember.getMemberId().toString() + " ";
+
                 }
             }
 
         }
         System.out.println("likePlaceMemberList" + likePlaceMemberList);
+        System.out.println(response);
 
         // 3: 2에서 얻은 List<Member> -> dto로
 
@@ -92,7 +99,8 @@ public class LikePlaceController {
             list.add(dto);
         }
 
-        return new AllGetLikePlaceResponseDto(list);
+//        return new AllGetLikePlaceResponseDto(list);
+        return new AllGetLikePlaceResponseDto(response);
 
     }
 
