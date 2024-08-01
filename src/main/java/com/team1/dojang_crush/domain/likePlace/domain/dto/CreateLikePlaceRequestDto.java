@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class CreateLikePlaceRequestDto {
 
     private Long placeId;
-    private Long memberId;
+//    private Long memberId;
 
 //    public LikePlace toEntity(Member member) {
 //        return Post.builder()
