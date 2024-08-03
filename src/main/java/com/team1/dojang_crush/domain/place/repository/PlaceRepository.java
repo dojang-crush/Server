@@ -10,4 +10,6 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
 
     List<Place> findByTheme(String theme);
 
+    List<Place> findByPlaceNameContaining(String searchKeyword);
+
 }
