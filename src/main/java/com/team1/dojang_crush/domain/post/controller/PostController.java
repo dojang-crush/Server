@@ -55,48 +55,46 @@ public class PostController {
 
 
     // 그룹 전체 게시글 조회
-    @GetMapping("/all/{groupId}")
+    @GetMapping("/all")
     @ResponseStatus(value = HttpStatus.OK)
-    public AllPostResponseDto getAllPosts(@PathVariable(name = "groupId")Long groupId,
-                                          @RequestParam("page")int page,
+    public AllPostResponseDto getAllPosts(@RequestParam("page")int page,
                                           @AuthUser Member member){
 
+
         // 그룹의 모든 post 찾기
-        List<Post> posts = postService.findAllPosts(groupId, member, page);
+        List<Post> posts = postService.findAllPosts(member, page);
 
         List<PostResponseDto> list = postService.postsToDtos(posts, member, "all");
-        return new AllPostResponseDto(groupId, list, list.size());
+        return new AllPostResponseDto(member.getGroup().getGroupId(), list, list.size());
     }
 
 
     // 그룹 날짜별 게시글 조회
-    @GetMapping("/date/{groupId}")
+    @GetMapping("/date")
     @ResponseStatus(value = HttpStatus.OK)
-    public AllPostResponseDto getDatePosts(@PathVariable(name = "groupId")Long groupId,
-                                           @RequestParam("visitedDate") @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate visitedDate,
+    public AllPostResponseDto getDatePosts(@RequestParam("visitedDate") @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate visitedDate,
                                            @AuthUser Member member){
 
         // 그룹과 날짜로 posts 찾기
-        List<Post> posts = postService.findPostsByDate1(groupId, visitedDate, member);
+        List<Post> posts = postService.findPostsByDate1(visitedDate, member);
 
         List<PostResponseDto> list = postService.postsToDtos(posts,member, "date");
-        return new AllPostResponseDto(groupId, list, list.size());
+        return new AllPostResponseDto(member.getGroup().getGroupId(), list, list.size());
     }
 
 
     // 그룹 월별 게시글 조회
-    @GetMapping("/{groupId}/year/{year}/month/{month}")
+    @GetMapping("/year/{year}/month/{month}")
     @ResponseStatus(value = HttpStatus.OK)
-    public AllPostResponseDto getMonthPosts(@PathVariable(name = "groupId")Long groupId,
-                                            @PathVariable(name = "year")Long year,
+    public AllPostResponseDto getMonthPosts(@PathVariable(name = "year")Long year,
                                             @PathVariable(name = "month")Long month,
-                                           @AuthUser Member member){
+                                            @AuthUser Member member){
 
         // 그룹과 월로 posts 찾기
-        List<Post> posts = postService.findPostsByMonth(groupId, year, month, member);
+        List<Post> posts = postService.findPostsByMonth(year, month, member);
 
         List<PostResponseDto> list = postService.postsToDtos(posts,member, "date");
-        return new AllPostResponseDto(groupId, list, list.size());
+        return new AllPostResponseDto(member.getGroup().getGroupId(), list, list.size());
     }
 
 
@@ -107,7 +105,7 @@ public class PostController {
     public PostResponseDto getOnePost(@PathVariable(name = "postId")Long postId,
                                       @AuthUser Member member){
 
-        Post post = postService.findPostById(postId);
+        Post post = postService.findOnePost(postId, member);
         PostImgUrl postImgUrl = postImgUrlService.findImgUrlByPost(post);
 
         Integer countLike = likePostService.countLikePost(post);
