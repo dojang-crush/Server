@@ -118,58 +118,46 @@ public class PostService {
     }
 
     // 그룹 게시글 찾기 (최신순)
-    @Transactional(readOnly = true)
-    public List<Post> findAllPosts(Long groupId, Member member, int page) {
+    public List<Post> findAllPosts(Member member, int page) {
 
-        if(member.getGroup().getGroupId().equals(groupId)){
             // 그룹아이디로 해당 그룹 멤버들 찾음
-            List<Member> members = groupService.findGroupMemberList(groupId);
+        List<Member> members = groupService.findGroupMemberList(member.getGroup().getGroupId());
 
-            List<Post> posts = new ArrayList<>();
-            // 멤버들로 post 찾음
-            for(Member member1 : members){
-                List<Post> memberPosts = postRepository.findAllByMember(member1);
-                for(Post post : memberPosts){
-                    posts.add(post);
-                }
+        List<Post> posts = new ArrayList<>();
+        // 멤버들로 post 찾음
+        for(Member member1 : members){
+            List<Post> memberPosts = postRepository.findAllByMember(member1);
+            for(Post post : memberPosts){
+                posts.add(post);
             }
-
-            // 최신순으로 정렬
-            List<Post> sortedPosts = posts.stream()
-                    .sorted((post1, post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt())) // 내림차순 정렬
-                    .collect(Collectors.toList());
-
-            // 페이지네이션
-            int pageIndex = page - 1;
-            int start = pageIndex * 5;
-            int end = Math.min(start + 5, sortedPosts.size());
-
-            if (start >= sortedPosts.size()) {
-                return Collections.emptyList(); // 요청한 페이지가 범위를 초과하는 경우 빈 리스트 반환
-            }
-            return sortedPosts.subList(start, end);
-
         }
-        else{
-            throw new AppException(ErrorCode.INVALID_REQUEST,"해당 그룹의 게시글 조회 권한이 없습니다.");
+
+        // 최신순으로 정렬
+        List<Post> sortedPosts = posts.stream()
+                .sorted((post1, post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt())) // 내림차순 정렬
+                .collect(Collectors.toList());
+
+        // 페이지네이션
+        int pageIndex = page - 1;
+        int start = pageIndex * 5;
+        int end = Math.min(start + 5, sortedPosts.size());
+
+        if (start >= sortedPosts.size()) {
+            return Collections.emptyList(); // 요청한 페이지가 범위를 초과하는 경우 빈 리스트 반환
         }
+        return sortedPosts.subList(start, end);
+
     }
 
 
     // 그룹 날짜별 게시글 찾기
-    @Transactional(readOnly = true)
-    public List<Post> findPostsByDate1(Long groupId, LocalDate visitedDate, Member member) {
-        if(member.getGroup().getGroupId().equals(groupId)){
-            return postRepository.findByGroupIdAndVisitedDate(groupId, visitedDate);
-        }
-        else{
-            throw new AppException(ErrorCode.INVALID_REQUEST,"해당 그룹의 게시글 조회 권한이 없습니다.");
-        }
+    public List<Post> findPostsByDate1(LocalDate visitedDate, Member member) {
+
+        return postRepository.findByGroupIdAndVisitedDate(member.getGroup().getGroupId(), visitedDate);
     }
 
 
     //postId로 게시글 찾기
-    @Transactional(readOnly = true)
     public Post findPostById(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(()-> new EntityNotFoundException("해당 id를 가진 게시글을 찾을 수 없습니다."+postId));
@@ -208,6 +196,8 @@ public class PostService {
         }
     }
 
+
+
     // 게시글 삭제
     public void deletePost(Long postId, Member member) {
         Post post = findPostById(postId);
@@ -220,29 +210,37 @@ public class PostService {
         }
     }
 
+
+
     //그룹 게시글 월별 찾기
-    public List<Post> findPostsByMonth(Long groupId, Long year, Long month, Member member) {
+    public List<Post> findPostsByMonth(Long year, Long month, Member member) {
 
-        if(member.getGroup().getGroupId().equals(groupId)){
-            List<Member> members = groupService.findGroupMemberList(groupId);
+        List<Member> members = groupService.findGroupMemberList(member.getGroup().getGroupId());
 
-            List<Post> posts = new ArrayList<>();
-            for(Member member1 : members) {
-                List<Post> memberPosts = postRepository.findAllByMember(member1);
-                for (Post post : memberPosts) {
-                    posts.add(post);
-                }
+        List<Post> posts = new ArrayList<>();
+        for(Member member1 : members) {
+            List<Post> memberPosts = postRepository.findAllByMember(member1);
+            for (Post post : memberPosts) {
+                posts.add(post);
             }
+        }
 
-            List<Post> filteredPosts = posts.stream()
-                    .filter(post -> post.getVisitedDate().getYear() == year &&
-                            post.getVisitedDate().getMonthValue() == month)
-                    .collect(Collectors.toList());
+        List<Post> filteredPosts = posts.stream()
+                .filter(post -> post.getVisitedDate().getYear() == year &&
+                        post.getVisitedDate().getMonthValue() == month)
+                .collect(Collectors.toList());
+        return filteredPosts;
 
-            return filteredPosts;
+    }
+
+    // 게시글 상세 조회
+    public Post findOnePost(Long postId, Member member) {
+        Post post = findPostById(postId);
+        if(post.getMember().getGroup().getGroupId().equals(member.getGroup().getGroupId())){
+            return post;
         }
         else{
-            throw new AppException(ErrorCode.INVALID_REQUEST, "해당 그룹의 게시글 조회 권한이 없습니다.");
+            throw new AppException(ErrorCode.INVALID_REQUEST, "해당 게시글 조회 권한이 없습니다.");
         }
     }
 }
