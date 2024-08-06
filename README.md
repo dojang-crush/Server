@@ -29,7 +29,11 @@
 ## 👩‍💻 팀원
 |🐬문서영|🤓손민서|💜정유진|👻황혜진|
 |---|---|---|---|
+|![image](https://avatars.githubusercontent.com/u/105192908?v=4)|![image](https://avatars.githubusercontent.com/u/144665079?v=4)|![image](https://avatars.githubusercontent.com/u/104640725?v=4)|![image](https://avatars.githubusercontent.com/u/144921254?v=4)|
+|🐬문서영|🤓손민서|💜정유진|👻황혜진|
 |소셜로그인 구현| 장소 조회 API <br> 위시리스트 API |AWS 배포<br> 댓글 API |그룹 API<br>db데이터 추가<br>게시글 API <br>s3 이미지 연결
+
+
 
 <br>
 
