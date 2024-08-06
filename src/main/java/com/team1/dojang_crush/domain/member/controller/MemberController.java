@@ -31,8 +31,9 @@ public class MemberController {
 
     //멤버 삭제
     @DeleteMapping
-    public ResponseEntity<Void> deleteMember(@AuthUser Member member) {
+    public ResponseEntity<String> deleteMember(@AuthUser Member member) {
         memberService.deleteMember(member);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>("멤버가 삭제되었습니다.", HttpStatus.OK);
     }
+
 }
