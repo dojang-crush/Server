@@ -40,8 +40,12 @@ public class MemberService {
                 .orElseThrow(()->new IllegalArgumentException("계정이 존재하지 않습니다."));
     }
 
+    public void deleteMember(Member member) {
+        memberRepository.delete(member);
+    }
+
     public Member createMember(String name, String imgUrl, String email) {
-        Group defaultGroup = groupRepository.findByGroupCode("DEFAULT");
+        Group defaultGroup = groupRepository.findByGroupCode("2e7a5b12-3fae-403d-b01d-45c9e4c25b82");
         if (defaultGroup == null) {
             throw new IllegalStateException("Default group not found");
         }
@@ -53,9 +57,6 @@ public class MemberService {
         return Optional.ofNullable(memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("Member not found with email: " + email)));
     };
-
-
-
 
     // group 업데이트
     public void updateGroup(Group group, Member member) {

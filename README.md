@@ -21,13 +21,35 @@
 
 <br>
 
+## 🗓️ 개발 기간
+2024.07.03 ~ 2024.08.10
+
+<br>
+
 ## 👩‍💻 팀원
 |🐬문서영|🤓손민서|💜정유진|👻황혜진|
 |---|---|---|---|
+|![image](https://avatars.githubusercontent.com/u/105192908?v=4)|![image](https://avatars.githubusercontent.com/u/144665079?v=4)|![image](https://avatars.githubusercontent.com/u/104640725?v=4)|![image](https://avatars.githubusercontent.com/u/144921254?v=4)|
+|🐬문서영|🤓손민서|💜정유진|👻황혜진|
 |소셜로그인 구현| 장소 조회 API <br> 위시리스트 API |AWS 배포<br> 댓글 API |그룹 API<br>db데이터 추가<br>게시글 API <br>s3 이미지 연결
+
+
 
 <br>
 
 ## 🪐 ERD
 ![](https://github.com/dojang-crush/Server/blob/93f9ea3abccbfcd93e5bc8bf2dd5b10a23979998/sws1_erd_ver2%20(2).png)
+
+<br>
+
+## 🚀 API 명세서
+![](https://github.com/dojang-crush/Server/blob/4e5f36f272a6152f44c9a32fea0b5134dce03212/readme%20%EC%9E%91%EC%84%B1%EC%9A%A9/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202024-08-06%2017.29.09.png)
+![](https://github.com/dojang-crush/Server/blob/4e5f36f272a6152f44c9a32fea0b5134dce03212/readme%20%EC%9E%91%EC%84%B1%EC%9A%A9/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202024-08-06%2017.29.26.png)
+![](https://github.com/dojang-crush/Server/blob/4e5f36f272a6152f44c9a32fea0b5134dce03212/readme%20%EC%9E%91%EC%84%B1%EC%9A%A9/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202024-08-06%2017.29.37.png)
+![](https://github.com/dojang-crush/Server/blob/4e5f36f272a6152f44c9a32fea0b5134dce03212/readme%20%EC%9E%91%EC%84%B1%EC%9A%A9/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202024-08-06%2017.29.45.png)
+![](https://github.com/dojang-crush/Server/blob/081369e42f7053cb2b3fb4c2d56744b94bac1ee5/readme%20%EC%9E%91%EC%84%B1%EC%9A%A9/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202024-08-06%2017.37.19.png)
+![](https://github.com/dojang-crush/Server/blob/4e5f36f272a6152f44c9a32fea0b5134dce03212/readme%20%EC%9E%91%EC%84%B1%EC%9A%A9/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202024-08-06%2017.30.21.png)
+![](https://github.com/dojang-crush/Server/blob/4e5f36f272a6152f44c9a32fea0b5134dce03212/readme%20%EC%9E%91%EC%84%B1%EC%9A%A9/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202024-08-06%2017.30.31.png)
+
+
 

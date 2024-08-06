@@ -5,7 +5,9 @@ import com.team1.dojang_crush.domain.member.dto.MemberDetailResponseDto;
 import com.team1.dojang_crush.domain.member.service.MemberService;
 import com.team1.dojang_crush.global.oauth.AuthUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,4 +28,12 @@ public class MemberController {
         MemberDetailResponseDto responseDto = new MemberDetailResponseDto(memberService.findMemberById(member.getMemberId()));
         return ResponseEntity.ok(responseDto);
     }
+
+    //멤버 삭제
+    @DeleteMapping
+    public ResponseEntity<String> deleteMember(@AuthUser Member member) {
+        memberService.deleteMember(member);
+        return new ResponseEntity<>("멤버가 삭제되었습니다.", HttpStatus.OK);
+    }
+
 }
