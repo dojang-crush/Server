@@ -37,9 +37,9 @@ public class S3Service {
     private AmazonS3 s3Client;
 
     // 파일 업로드해서 imgUrl 반환
-    public String uploadFiles(MultipartFile file) throws IOException {
+    public String uploadFiles(MultipartFile file, Long postId) throws IOException {
 
-        String fileName = file.getOriginalFilename();
+        String fileName = file.getOriginalFilename()+"_"+String.valueOf(postId);
         File convertedFile = convertMultiPartFileToFile(file)
                 .orElseThrow(()->new RuntimeException("MultipartFile -> File 전환 실패"));
 
@@ -64,12 +64,12 @@ public class S3Service {
     }
 
     // s3에서 이미지 파일 삭제
-    public void deleteFile(List<String> postImgUrl) {
+    public void deleteFile(List<String> postImgUrl, Long postId) {
         for (String fileUrl : postImgUrl) {
 
             try {
                 String bucketUrl = "https://" + bucketName + ".s3." + region + ".amazonaws.com/";
-                String fileName = fileUrl.substring(bucketUrl.length());
+                String fileName = fileUrl.substring(bucketUrl.length())+"_"+String.valueOf(postId);
 
 
                 s3Client.deleteObject(new DeleteObjectRequest(bucketName, fileName));

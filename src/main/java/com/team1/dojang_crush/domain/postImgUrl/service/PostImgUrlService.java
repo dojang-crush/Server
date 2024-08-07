@@ -37,7 +37,7 @@ public class PostImgUrlService {
         List<String> uploadedUrls = new ArrayList<>();
 
         for(MultipartFile file : files) {
-            String uploadedUrl = s3Service.uploadFiles(file);
+            String uploadedUrl = s3Service.uploadFiles(file, post.getPostId());
             uploadedUrls.add(uploadedUrl);
         }
 
@@ -76,7 +76,7 @@ public class PostImgUrlService {
 
             PostImgUrl postImgUrl = findImgUrlByPost(post);
             // S3에서 이미지 삭제
-            s3Service.deleteFile(postImgUrl.getPostImgUrl());
+            s3Service.deleteFile(postImgUrl.getPostImgUrl(), post.getPostId());
             //삭제
             postImgUrlRepository.delete(postImgUrl);
         }
@@ -88,17 +88,16 @@ public class PostImgUrlService {
         // 원래 이미지가 있었던 경우
         if(isExistsByPost(post)){
 
+            PostImgUrl postImgUrl = findImgUrlByPost(post);
+            //s3에서 기존의 파일 삭제
+            s3Service.deleteFile(postImgUrl.getPostImgUrl(), post.getPostId());
+
             //새로운 이미지 업로드
             List<String> uploadedUrls = new ArrayList<>();
             for(MultipartFile file : images) {
-                String uploadedUrl = s3Service.uploadFiles(file);
+                String uploadedUrl = s3Service.uploadFiles(file, post.getPostId());
                 uploadedUrls.add(uploadedUrl);
             }
-
-
-            PostImgUrl postImgUrl = findImgUrlByPost(post);
-            //s3에서 기존의 파일 삭제
-            s3Service.deleteFile(postImgUrl.getPostImgUrl());
 
             //새로운 url로 업데이트
             postImgUrl.update(uploadedUrls);
