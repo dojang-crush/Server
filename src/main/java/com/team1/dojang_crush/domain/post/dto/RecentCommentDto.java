@@ -21,6 +21,10 @@ public class RecentCommentDto {
     private WriterDto writerDto;
 
     public static RecentCommentDto from(Comment recentComment, WriterDto commentWriter) {
+        Long parentId;
+        if (recentComment.getParentComment()==null) parentId=0l;
+        else parentId=recentComment.getParentComment().getCommentId();
+
         return new RecentCommentDto(
                 recentComment.getCommentId(),
                 recentComment.getPost().getPostId(),
@@ -28,7 +32,7 @@ public class RecentCommentDto {
                 recentComment.getCreatedAt(),
                 recentComment.getModifiedAt(),
                 recentComment.getCommentDepth(),
-                recentComment.getParentComment().getCommentId(),
+                parentId,
                 commentWriter
         );
     }
