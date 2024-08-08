@@ -58,9 +58,7 @@ public class SecurityConfig {
         configuration.addAllowedOrigin("http://localhost:5173");
         configuration.addAllowedOrigin("http://localhost:5174");
         configuration.addAllowedOrigin("http://localhost:8080");
-        configuration.addAllowedHeader("https://api.dojang-crush.p-e.kr");
         configuration.addAllowedOrigin("https://api.dojang-crush.p-e.kr");
-        configuration.addAllowedHeader("https://dojang-crush-client.vercel.app");
         configuration.addAllowedOrigin("https://dojang-crush-client.vercel.app");
 
         configuration.addAllowedMethod("GET");
